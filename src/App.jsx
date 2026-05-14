@@ -1,0 +1,455 @@
+import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { useState, useEffect, useCallback } from 'react';
+import { Settings as SettingsIcon, Home as HomeIcon, BookOpen, ClipboardList, BookHeart, Handshake, LogOut, MessageSquare } from 'lucide-react';
+import { useTheme } from './contexts/ThemeContext';
+import { supabase } from './lib/supabase';
+import ClientPINLogin from './components/ClientPINLogin';
+import SSOCallback from './components/SSOCallback';
+import PINAuthDiagnostic from './components/PINAuthDiagnostic';
+import TestClientCreator from './components/TestClientCreator';
+import Home from './pages/Home';
+import CurriculumSystem from './components/CurriculumSystem';
+import LearningModuleRenderer from './components/LearningModuleRenderer';
+import CheatSheet from './pages/CheatSheet';
+import Wounds from './pages/Wounds';
+import Qualities from './pages/Qualities';
+import PartsMapping from './pages/PartsMapping';
+import Exercises from './pages/Exercises';
+import Assessment from './pages/Assessment';
+import Assessments from './pages/Assessments';
+import Resources from './pages/Resources';
+import Journal from './pages/Journal';
+import Profile from './pages/Profile';
+import Settings from './pages/Settings';
+import PartsStudio from './pages/PartsStudio';
+import MicroLearning from './pages/MicroLearning';
+import Affirmations from './pages/Affirmations';
+import TherapyIntegration from './pages/TherapyIntegration';
+import TherapistDashboard from './pages/TherapistDashboard';
+import CoTherapySession from './pages/CoTherapySession';
+import ProgressTimeline from './pages/ProgressTimeline';
+import MoodTracker from './pages/MoodTracker';
+import GamificationHub from './pages/GamificationHub';
+import PartsDialogue from './pages/PartsDialogue';
+import TherapistMessages from './pages/TherapistMessages';
+import TherapistHomework from './pages/TherapistHomework';
+import TherapistReports from './pages/TherapistReports';
+import ClientInbox from './pages/ClientInbox';
+import ClientHomework from './pages/ClientHomework';
+import PartsRelationshipMap from './pages/PartsRelationshipMap';
+import UnburdeningProtocol from './pages/UnburdeningProtocol';
+import AssessmentBuilder from './pages/AssessmentBuilder';
+import CustomAssessment from './pages/CustomAssessment';
+import GuidedMeditation from './pages/GuidedMeditation';
+import DailyCheckin from './pages/DailyCheckin';
+import MoodAnalytics from './pages/MoodAnalytics';
+import Milestones from './pages/Milestones';
+import WeeklyReflection from './pages/WeeklyReflection';
+import LetterWriting from './pages/LetterWriting';
+import PartsCards from './pages/PartsCards';
+import HealingTracker from './pages/HealingTracker';
+import OnboardingFlow from './components/OnboardingFlow';
+import { initializePushNotifications } from './lib/pushNotifications';
+import ResourceLibrary from './pages/ResourceLibrary';
+import AuthDebug from './components/AuthDebug';
+import PINEntry from './components/PINEntry';
+import { DataProvider } from './contexts/DataContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { PartsProvider } from './contexts/PartsContext';
+import { clientAuth } from './lib/supabasePersonalization';
+import { canAccessFeature } from './lib/accessControl';
+import { Lock } from 'lucide-react';
+
+function FeatureGate({ feature, children }) {
+  const { theme } = useTheme();
+  if (!canAccessFeature(feature)) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme.isDark ? 'text-slate-100' : ''}`}>
+        <div className="text-center px-6 max-w-md">
+          <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${theme.isDark ? 'bg-slate-800' : 'bg-gray-100'}`}>
+            <Lock className={`w-8 h-8 ${theme.isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+          </div>
+          <h2 className={`text-xl font-bold mb-2 ${theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            Feature Not Available
+          </h2>
+          <p className={`text-sm ${theme.isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            This feature is not yet available for your account. Contact your advisor to request access.
+          </p>
+        </div>
+      </div>
+    );
+  }
+  return children;
+}
+
+function BottomNav() {
+  const location = useLocation();
+  const { theme } = useTheme();
+  const navItems = [
+    { path: '/', icon: HomeIcon, label: 'Home' },
+    { path: '/curriculum', icon: BookOpen, label: 'Curriculum' },
+    { path: '/assessments', icon: ClipboardList, label: 'Assessments' },
+    { path: '/journal', icon: BookHeart, label: 'Journal' },
+    { path: '/therapy', icon: Handshake, label: 'Integration' },
+  ];
+
+  const accentMap = {
+    blue: { active: 'text-blue-600', bg: 'bg-blue-100' },
+    emerald: { active: 'text-emerald-600', bg: 'bg-emerald-100' },
+    amber: { active: 'text-amber-600', bg: 'bg-amber-100' },
+    purple: { active: 'text-amber-600', bg: 'bg-amber-100' },
+    indigo: { active: 'text-indigo-400', bg: 'bg-indigo-900' },
+  };
+  const accent = accentMap[theme.accent] || accentMap.amber;
+
+  return (
+    <nav className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg border-t shadow-[0_-2px_10px_rgba(0,0,0,0.06)] ${theme.isDark ? 'bg-slate-900/95 border-slate-700/50' : 'bg-white/95 border-gray-200/50'}`}>
+      <div className="max-w-lg mx-auto flex justify-around items-center h-16 px-2">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = item.path === '/' ? location.pathname === '/' : location.pathname.startsWith(item.path);
+          return (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-[60px] ${
+                isActive
+                  ? accent.active
+                  : theme.isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'
+              }`}
+            >
+              <div className={`p-1 rounded-lg transition-all duration-200 ${isActive ? accent.bg : ''}`}>
+                <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
+              </div>
+              <span className={`text-[10px] leading-tight ${isActive ? 'font-semibold' : 'font-medium'}`}>
+                {item.label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+      <div className="h-[env(safe-area-inset-bottom)]" />
+    </nav>
+  );
+}
+
+function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentClient, setCurrentClient] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const tokenResult = await clientAuth.handleTokenFromURL();
+      
+      if (tokenResult && tokenResult.success) {
+        setIsAuthenticated(true);
+        setCurrentClient(tokenResult.client);
+        initializePushNotifications(tokenResult.client);
+        return;
+      }
+
+      const client = clientAuth.getCurrentClientValidated();
+      if (client) {
+        setIsAuthenticated(true);
+        setCurrentClient(client);
+        initializePushNotifications(client);
+      }
+    };
+
+    initializeAuth();
+  }, []);
+
+  useEffect(() => {
+    if (!isAuthenticated || !currentClient) return;
+    if (currentClient.user_role === 'therapist') {
+      setOnboardingChecked(true);
+      return;
+    }
+
+    const checkAssessments = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('ifs_interactive_data')
+          .select('module_id')
+          .eq('client_id', currentClient.id)
+          .in('module_id', ['assessment_wounds', 'assessment_parts', 'assessment_self-energy']);
+
+        if (error) {
+          console.error('Error checking assessment status:', error);
+          setShowOnboarding(true);
+          setOnboardingChecked(true);
+          return;
+        }
+
+        const completedIds = (data || []).map(r => r.module_id);
+        const allDone = ['assessment_wounds', 'assessment_parts', 'assessment_self-energy'].every(id => completedIds.includes(id));
+
+        if (!allDone) {
+          setShowOnboarding(true);
+        } else {
+          localStorage.setItem(`onboarding_completed_${currentClient.id}`, 'true');
+        }
+      } catch (err) {
+        console.error('Error checking assessment status:', err);
+        setShowOnboarding(true);
+      }
+      setOnboardingChecked(true);
+    };
+
+    checkAssessments();
+  }, [isAuthenticated, currentClient]);
+
+  const handleLogin = async (pin) => {
+    const result = await clientAuth.authenticateWithPIN(pin);
+    if (result.success) {
+      setIsAuthenticated(true);
+      setCurrentClient(result.client);
+      initializePushNotifications(result.client);
+      return true;
+    }
+    return false;
+  };
+
+  const handleLogout = () => {
+    clientAuth.logout();
+    setIsAuthenticated(false);
+    setCurrentClient(null);
+    setShowOnboarding(false);
+  };
+
+  return (
+    <ThemeProvider>
+    <PartsProvider>
+    <DataProvider>
+      <Router>
+        <AppContent
+          isAuthenticated={isAuthenticated}
+          currentClient={currentClient}
+          handleLogin={handleLogin}
+          handleLogout={handleLogout}
+          showOnboarding={showOnboarding}
+          onboardingChecked={onboardingChecked}
+          onOnboardingComplete={() => setShowOnboarding(false)}
+        />
+      </Router>
+    </DataProvider>
+    </PartsProvider>
+    </ThemeProvider>
+  );
+}
+
+function AppContent({ isAuthenticated, currentClient, handleLogin, handleLogout, showOnboarding, onboardingChecked, onOnboardingComplete }) {
+  const { theme } = useTheme();
+  const location = useLocation();
+  const bgClass = isAuthenticated ? `bg-gradient-to-br ${theme.primary}` : '';
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    if (!currentClient?.id) return;
+    try {
+      const isTherapist = currentClient.user_role === 'therapist';
+      let query = supabase.from('ifs_messages').select('id', { count: 'exact', head: true }).is('read_at', null);
+      if (isTherapist) {
+        query = query.eq('therapist_id', currentClient.id).eq('sender_role', 'client');
+      } else {
+        query = query.eq('client_id', currentClient.id).eq('sender_role', 'therapist');
+      }
+      const { count } = await query;
+      setUnreadMsgCount(count || 0);
+    } catch (e) {
+      console.error('Error fetching unread count:', e);
+    }
+  }, [currentClient?.id, currentClient?.user_role]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !currentClient?.id) return;
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 15000);
+    return () => clearInterval(interval);
+  }, [isAuthenticated, currentClient?.id, fetchUnreadCount]);
+
+  return (
+    <div className={`min-h-screen ${bgClass}`}>
+      {!isAuthenticated ? (
+        location.pathname.startsWith('/sso/callback') ? (
+          <SSOCallback onLogin={handleLogin} />
+        ) : (
+        <Routes>
+          <Route path="/" element={<ClientPINLogin onLogin={handleLogin} />} />
+          <Route path="/sso/callback" element={<SSOCallback onLogin={handleLogin} />} />
+          <Route path="/test-client" element={<TestClientCreator />} />
+          <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
+          <Route path="/auth-debug" element={<AuthDebug />} />
+          <Route path="*" element={<ClientPINLogin onLogin={handleLogin} />} />
+        </Routes>
+        )
+      ) : (isAuthenticated && !onboardingChecked) ? (
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+        </div>
+      ) : showOnboarding ? (
+        location.pathname === '/assessments' ? (
+          <div className={`min-h-screen ${bgClass}`}>
+            <div className="pb-4">
+              <Routes>
+                <Route path="/assessments" element={<Assessments />} />
+              </Routes>
+            </div>
+          </div>
+        ) : (
+          <OnboardingFlow
+            onComplete={onOnboardingComplete}
+            clientName={currentClient?.name?.split(' ')[0]}
+            clientId={currentClient?.id}
+          />
+        )
+      ) : (
+        <>
+          <header className={`sticky top-0 z-50 backdrop-blur-lg border-b shadow-sm ${theme.isDark ? 'bg-slate-900/80 border-slate-700/50' : 'bg-white/80 border-gray-200/50'}`}>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                  <div className="flex justify-between items-center h-14">
+                    <Link to="/" className="flex items-center gap-2">
+                      <img src="/logo.png" alt="ITS" className="w-9 h-auto" />
+                      <h1 className="text-base font-bold bg-gradient-to-r from-amber-700 to-emerald-700 bg-clip-text text-transparent leading-tight">
+                        Internal Family<br/>Systems
+                      </h1>
+                    </Link>
+                    <div className="flex items-center gap-1">
+                      {currentClient?.user_role === 'therapist' && (
+                        <Link
+                          to="/therapist-dashboard"
+                          className={`p-2 rounded-lg transition-all ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
+                          title="Advisor Dashboard"
+                        >
+                          <ClipboardList className="w-5 h-5" />
+                        </Link>
+                      )}
+                      <Link
+                        to={currentClient?.user_role === 'therapist' ? '/advisor-messages' : '/inbox'}
+                        className={`p-2 rounded-lg transition-all relative ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
+                        title="Messages"
+                      >
+                        <MessageSquare className="w-5 h-5" />
+                        {unreadMsgCount > 0 && (
+                          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full px-1 animate-pulse">
+                            {unreadMsgCount > 99 ? '99+' : unreadMsgCount}
+                          </span>
+                        )}
+                      </Link>
+                      <Link
+                        to="/settings"
+                        className={`p-2 rounded-lg transition-all ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
+                        title="Settings"
+                      >
+                        <SettingsIcon className="w-5 h-5" />
+                      </Link>
+                      <Link
+                        to="/profile"
+                        className={`p-2 rounded-lg transition-all ${theme.isDark ? 'hover:bg-slate-800' : 'hover:bg-amber-50'}`}
+                      >
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold">
+                          {currentClient?.name?.charAt(0) || '?'}
+                        </div>
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
+                        title="Logout"
+                      >
+                        <LogOut className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </header>
+              
+              <div className="pb-20">
+              <Routes>
+                <Route path="/" element={<Home clientId={currentClient?.id} client={currentClient} />} />
+                <Route path="/curriculum" element={<CurriculumSystem clientId={currentClient?.id} userProgress={{}} />} />
+                <Route path="/curriculum/module/:moduleId" element={<LearningModuleRenderer userProgress={{}} />} />
+                <Route path="/cheat-sheet" element={<CheatSheet />} />
+                <Route path="/wounds" element={<Wounds />} />
+                <Route path="/qualities" element={<Qualities />} />
+                <Route path="/parts-mapping" element={<PartsMapping />} />
+                <Route path="/exercises" element={<FeatureGate feature="exercises"><Exercises /></FeatureGate>} />
+                <Route path="/assessment" element={<Assessment />} />
+                <Route path="/assessments" element={<Assessments />} />
+                <Route path="/resources" element={<Resources />} />
+                <Route path="/resource-library" element={<FeatureGate feature="resourceLibrary"><ResourceLibrary /></FeatureGate>} />
+                <Route path="/journal" element={<FeatureGate feature="journal"><Journal /></FeatureGate>} />
+                <Route path="/profile" element={<Profile client={currentClient} />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/parts-studio" element={<FeatureGate feature="partsStudio"><PartsStudio /></FeatureGate>} />
+                <Route path="/micro-learning" element={<MicroLearning />} />
+                <Route path="/affirmations" element={<Affirmations />} />
+                <Route path="/therapy" element={<TherapyIntegration />} />
+                <Route path="/admin" element={
+                  currentClient?.user_role === 'therapist' 
+                    ? <TherapistDashboard /> 
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/therapist-dashboard" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <TherapistDashboard />
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/co-therapy" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <CoTherapySession />
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/advisor-messages" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <TherapistMessages />
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/advisor-homework" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <TherapistHomework />
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/advisor-reports" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <TherapistReports />
+                    : <Home clientId={currentClient?.id} client={currentClient} />
+                } />
+                <Route path="/inbox" element={
+                  currentClient?.user_role === 'therapist'
+                    ? <TherapistMessages />
+                    : <ClientInbox />
+                } />
+                <Route path="/my-homework" element={<ClientHomework />} />
+                <Route path="/progress-timeline" element={<ProgressTimeline />} />
+                <Route path="/mood-tracker" element={<MoodTracker />} />
+                <Route path="/gamification" element={<GamificationHub />} />
+                <Route path="/parts-dialogue" element={<FeatureGate feature="partsDialogue"><PartsDialogue /></FeatureGate>} />
+                <Route path="/parts-relationships" element={<PartsRelationshipMap />} />
+                <Route path="/unburdening" element={<FeatureGate feature="unburdening"><UnburdeningProtocol /></FeatureGate>} />
+                <Route path="/assessment-builder" element={<AssessmentBuilder />} />
+                <Route path="/custom-assessment/:assessmentId" element={<CustomAssessment />} />
+                <Route path="/meditation" element={<FeatureGate feature="meditations"><GuidedMeditation /></FeatureGate>} />
+                <Route path="/daily-checkin" element={<FeatureGate feature="dailyCheckin"><DailyCheckin /></FeatureGate>} />
+                <Route path="/mood-analytics" element={<FeatureGate feature="moodAnalytics"><MoodAnalytics /></FeatureGate>} />
+                <Route path="/milestones" element={<FeatureGate feature="milestones"><Milestones /></FeatureGate>} />
+                <Route path="/weekly-reflection" element={<FeatureGate feature="weeklyReflection"><WeeklyReflection /></FeatureGate>} />
+                <Route path="/letters" element={<FeatureGate feature="letters"><LetterWriting /></FeatureGate>} />
+                <Route path="/parts-cards" element={<FeatureGate feature="partsCards"><PartsCards /></FeatureGate>} />
+                <Route path="/healing-tracker" element={<FeatureGate feature="healingTracker"><HealingTracker /></FeatureGate>} />
+                <Route path="/test-client" element={<TestClientCreator />} />
+                <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
+                <Route path="/auth-debug" element={<AuthDebug />} />
+                <Route path="*" element={<Home clientId={currentClient?.id} />} />
+              </Routes>
+              </div>
+
+              <BottomNav />
+            </>
+          )}
+        </div>
+  );
+}
+
+export default App;
