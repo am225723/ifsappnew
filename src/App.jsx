@@ -482,7 +482,17 @@ function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, 
                         </div>
                       </Link>
                       <div className="px-1">
-                        <UserButton afterSignOutUrl="/sign-in" />
+                        <UserButton afterSignOutUrl="/sign-in">
+                          <UserButton.UserProfilePage
+                            label="Assessment Results"
+                            labelIcon={<ClipboardList className="w-4 h-4" />}
+                            url="assessment-results"
+                          >
+                            <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-gradient-to-br from-amber-50 via-white to-emerald-50">
+                              <Profile client={currentClient} embedded />
+                            </div>
+                          </UserButton.UserProfilePage>
+                        </UserButton>
                       </div>
                       <button
                         onClick={handleLogout}
