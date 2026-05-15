@@ -8,6 +8,14 @@
       "destination": "/api/$1"
     },
     {
+      "source": "/manifest.json",
+      "destination": "/manifest.json"
+    },
+    {
+      "source": "/OneSignalSDKWorker.js",
+      "destination": "/OneSignalSDKWorker.js"
+    },
+    {
       "source": "/assets/(.*)",
       "destination": "/assets/$1"
     },
@@ -23,6 +31,24 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/OneSignalSDKWorker.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
         }
       ]
     }
