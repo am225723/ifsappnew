@@ -1,9 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
 import { useState, useEffect, useCallback } from 'react';
+import { SignIn, SignUp, useAuth, UserButton } from '@clerk/clerk-react';
 import { Settings as SettingsIcon, Home as HomeIcon, BookOpen, ClipboardList, BookHeart, Handshake, LogOut, MessageSquare } from 'lucide-react';
 import { useTheme } from './contexts/ThemeContext';
 import { supabase } from './lib/supabase';
-import ClientPINLogin from './components/ClientPINLogin';
 import SSOCallback from './components/SSOCallback';
 import PINAuthDiagnostic from './components/PINAuthDiagnostic';
 import TestClientCreator from './components/TestClientCreator';
@@ -52,13 +52,110 @@ import OnboardingFlow from './components/OnboardingFlow';
 import { initializePushNotifications } from './lib/pushNotifications';
 import ResourceLibrary from './pages/ResourceLibrary';
 import AuthDebug from './components/AuthDebug';
-import PINEntry from './components/PINEntry';
 import { DataProvider } from './contexts/DataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { PartsProvider } from './contexts/PartsContext';
 import { clientAuth } from './lib/supabasePersonalization';
 import { canAccessFeature } from './lib/accessControl';
+import { clearClientSession, claimClientWithPin, fetchLinkedClient, persistClientSession } from './lib/clerkClientAuth';
 import { Lock } from 'lucide-react';
+
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+    </div>
+  );
+}
+
+function ClaimClientProfile({ onClaim }) {
+  const [pin, setPin] = useState('');
+  const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError('');
+
+    if (!/^\d{6}$/.test(pin)) {
+      setError('Enter your 6-digit client PIN.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    const result = await onClaim(pin);
+    setIsSubmitting(false);
+
+    if (!result.success) {
+      setError(result.error || 'Unable to link your client profile.');
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
+      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-amber-100 p-8">
+        <div className="text-center mb-6">
+          <img src="/logo.png" alt="IFS" className="w-16 h-auto mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-gray-900">Link your IFS profile</h1>
+          <p className="text-sm text-gray-600 mt-2">
+            Enter your old 6-digit PIN once. We’ll connect your existing progress, assessments, journal entries, and messages to your Clerk login.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            value={pin}
+            onChange={(event) => setPin(event.target.value.replace(/\D/g, '').slice(0, 6))}
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            placeholder="123456"
+            className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-center text-2xl tracking-[0.35em] font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500"
+          />
+          {error && <p className="text-sm text-red-600 text-center">{error}</p>}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full rounded-2xl bg-amber-600 text-white font-semibold py-3 hover:bg-amber-700 disabled:opacity-60 transition-colors"
+          >
+            {isSubmitting ? 'Linking…' : 'Link my profile'}
+          </button>
+        </form>
+
+        <p className="text-xs text-gray-500 text-center mt-5">
+          Your app data stays linked to your existing client ID. Clerk only replaces the login method.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ClerkAuthRoutes({ onClaim }) {
+  return (
+    <Routes>
+      <Route
+        path="/sign-in/*"
+        element={
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
+            <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" afterSignInUrl="/claim-account" />
+          </div>
+        }
+      />
+      <Route
+        path="/sign-up/*"
+        element={
+          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
+            <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" afterSignUpUrl="/claim-account" />
+          </div>
+        }
+      />
+      <Route path="/claim-account" element={<ClaimClientProfile onClaim={onClaim} />} />
+      <Route path="/test-client" element={<TestClientCreator />} />
+      <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
+      <Route path="/auth-debug" element={<AuthDebug />} />
+      <Route path="*" element={<Navigate to="/sign-in" replace />} />
+    </Routes>
+  );
+}
 
 function FeatureGate({ feature, children }) {
   const { theme } = useTheme();
@@ -134,32 +231,51 @@ function BottomNav() {
 }
 
 function App() {
+  const { isLoaded, isSignedIn, getToken, signOut } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentClient, setCurrentClient] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
     const initializeAuth = async () => {
-      const tokenResult = await clientAuth.handleTokenFromURL();
-      
-      if (tokenResult && tokenResult.success) {
-        setIsAuthenticated(true);
-        setCurrentClient(tokenResult.client);
-        initializePushNotifications(tokenResult.client);
+      if (!isLoaded) return;
+
+      if (!isSignedIn) {
+        clearClientSession();
+        setIsAuthenticated(false);
+        setCurrentClient(null);
+        setShowOnboarding(false);
+        setOnboardingChecked(false);
+        setAuthChecked(true);
         return;
       }
 
-      const client = clientAuth.getCurrentClientValidated();
-      if (client) {
-        setIsAuthenticated(true);
-        setCurrentClient(client);
-        initializePushNotifications(client);
+      try {
+        const client = await fetchLinkedClient(getToken);
+        if (client) {
+          persistClientSession(client);
+          setIsAuthenticated(true);
+          setCurrentClient(client);
+          initializePushNotifications(client);
+        } else {
+          clearClientSession();
+          setIsAuthenticated(false);
+          setCurrentClient(null);
+        }
+      } catch (error) {
+        console.error('Error loading Clerk-linked client:', error);
+        clearClientSession();
+        setIsAuthenticated(false);
+        setCurrentClient(null);
       }
+
+      setAuthChecked(true);
     };
 
     initializeAuth();
-  }, []);
+  }, [isLoaded, isSignedIn, getToken]);
 
   useEffect(() => {
     if (!isAuthenticated || !currentClient) return;
@@ -201,22 +317,29 @@ function App() {
     checkAssessments();
   }, [isAuthenticated, currentClient]);
 
-  const handleLogin = async (pin) => {
-    const result = await clientAuth.authenticateWithPIN(pin);
-    if (result.success) {
+  const handleClaim = async (pin) => {
+    try {
+      const client = await claimClientWithPin(getToken, pin);
+      persistClientSession(client);
       setIsAuthenticated(true);
-      setCurrentClient(result.client);
-      initializePushNotifications(result.client);
-      return true;
+      setCurrentClient(client);
+      setShowOnboarding(false);
+      setOnboardingChecked(false);
+      initializePushNotifications(client);
+      return { success: true };
+    } catch (error) {
+      return { success: false, error: error.message };
     }
-    return false;
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     clientAuth.logout();
+    clearClientSession();
     setIsAuthenticated(false);
     setCurrentClient(null);
     setShowOnboarding(false);
+    setOnboardingChecked(false);
+    await signOut({ redirectUrl: '/sign-in' });
   };
 
   return (
@@ -225,9 +348,12 @@ function App() {
     <DataProvider>
       <Router>
         <AppContent
+          authChecked={authChecked}
+          clerkLoaded={isLoaded}
+          clerkSignedIn={!!isSignedIn}
           isAuthenticated={isAuthenticated}
           currentClient={currentClient}
-          handleLogin={handleLogin}
+          handleClaim={handleClaim}
           handleLogout={handleLogout}
           showOnboarding={showOnboarding}
           onboardingChecked={onboardingChecked}
@@ -240,7 +366,7 @@ function App() {
   );
 }
 
-function AppContent({ isAuthenticated, currentClient, handleLogin, handleLogout, showOnboarding, onboardingChecked, onOnboardingComplete }) {
+function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, currentClient, handleClaim, handleLogout, showOnboarding, onboardingChecked, onOnboardingComplete }) {
   const { theme } = useTheme();
   const location = useLocation();
   const bgClass = isAuthenticated ? `bg-gradient-to-br ${theme.primary}` : '';
@@ -272,23 +398,24 @@ function AppContent({ isAuthenticated, currentClient, handleLogin, handleLogout,
 
   return (
     <div className={`min-h-screen ${bgClass}`}>
-      {!isAuthenticated ? (
+      {!clerkLoaded || !authChecked ? (
+        <LoadingScreen />
+      ) : !isAuthenticated ? (
         location.pathname.startsWith('/sso/callback') ? (
-          <SSOCallback onLogin={handleLogin} />
+          <SSOCallback />
+        ) : clerkSignedIn ? (
+          <Routes>
+            <Route path="/claim-account" element={<ClaimClientProfile onClaim={handleClaim} />} />
+            <Route path="/test-client" element={<TestClientCreator />} />
+            <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
+            <Route path="/auth-debug" element={<AuthDebug />} />
+            <Route path="*" element={<Navigate to="/claim-account" replace />} />
+          </Routes>
         ) : (
-        <Routes>
-          <Route path="/" element={<ClientPINLogin onLogin={handleLogin} />} />
-          <Route path="/sso/callback" element={<SSOCallback onLogin={handleLogin} />} />
-          <Route path="/test-client" element={<TestClientCreator />} />
-          <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
-          <Route path="/auth-debug" element={<AuthDebug />} />
-          <Route path="*" element={<ClientPINLogin onLogin={handleLogin} />} />
-        </Routes>
+          <ClerkAuthRoutes onClaim={handleClaim} />
         )
       ) : (isAuthenticated && !onboardingChecked) ? (
-        <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
-        </div>
+        <LoadingScreen />
       ) : showOnboarding ? (
         location.pathname === '/assessments' ? (
           <div className={`min-h-screen ${bgClass}`}>
@@ -353,6 +480,9 @@ function AppContent({ isAuthenticated, currentClient, handleLogin, handleLogout,
                           {currentClient?.name?.charAt(0) || '?'}
                         </div>
                       </Link>
+                      <div className="px-1">
+                        <UserButton afterSignOutUrl="/sign-in" />
+                      </div>
                       <button
                         onClick={handleLogout}
                         className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
@@ -441,6 +571,9 @@ function AppContent({ isAuthenticated, currentClient, handleLogin, handleLogout,
                 <Route path="/test-client" element={<TestClientCreator />} />
                 <Route path="/diagnostic" element={<PINAuthDiagnostic />} />
                 <Route path="/auth-debug" element={<AuthDebug />} />
+                <Route path="/sign-in/*" element={<Navigate to="/" replace />} />
+                <Route path="/sign-up/*" element={<Navigate to="/" replace />} />
+                <Route path="/claim-account" element={<Navigate to="/" replace />} />
                 <Route path="*" element={<Home clientId={currentClient?.id} />} />
               </Routes>
               </div>
