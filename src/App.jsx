@@ -7,6 +7,7 @@ import { supabase } from './lib/supabase';
 import SSOCallback from './components/SSOCallback';
 import PINAuthDiagnostic from './components/PINAuthDiagnostic';
 import TestClientCreator from './components/TestClientCreator';
+import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import CurriculumSystem from './components/CurriculumSystem';
 import LearningModuleRenderer from './components/LearningModuleRenderer';
@@ -62,8 +63,8 @@ import { Lock } from 'lucide-react';
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-500"></div>
+    <div className="min-h-screen flex items-center justify-center bg-brand-sanctuary dark:bg-brand-midnight">
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-gold-600"></div>
     </div>
   );
 }
@@ -92,12 +93,12 @@ function ClaimClientProfile({ onClaim }) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
-      <div className="w-full max-w-md bg-white rounded-3xl shadow-xl border border-amber-100 p-8">
+    <div className="min-h-screen flex items-center justify-center bg-brand-sanctuary dark:bg-brand-midnight px-4">
+      <div className="w-full max-w-md soft-card p-8">
         <div className="text-center mb-6">
           <img src="/logo.png" alt="IFS" className="w-16 h-auto mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900">Link your IFS profile</h1>
-          <p className="text-sm text-gray-600 mt-2">
+          <h1 className="text-2xl font-serif font-semibold text-brand-stone-900 dark:text-slate-100">Link your IFS profile</h1>
+          <p className="text-sm text-brand-stone-600 dark:text-slate-400 mt-2">
             Enter your old 6-digit PIN once. We’ll connect your existing progress, assessments, journal entries, and messages to your Clerk login.
           </p>
         </div>
@@ -109,19 +110,19 @@ function ClaimClientProfile({ onClaim }) {
             inputMode="numeric"
             autoComplete="one-time-code"
             placeholder="123456"
-            className="w-full rounded-2xl border border-gray-200 px-4 py-3 text-center text-2xl tracking-[0.35em] font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500"
+            className="w-full rounded-2xl border border-brand-stone-200 dark:border-slate-700 bg-white/70 dark:bg-slate-900/60 px-4 py-3 text-center text-2xl tracking-[0.35em] font-semibold text-brand-stone-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-gold-600"
           />
           {error && <p className="text-sm text-red-600 text-center">{error}</p>}
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full rounded-2xl bg-amber-600 text-white font-semibold py-3 hover:bg-amber-700 disabled:opacity-60 transition-colors"
+            className="w-full btn-sanctuary-primary disabled:opacity-60"
           >
             {isSubmitting ? 'Linking…' : 'Link my profile'}
           </button>
         </form>
 
-        <p className="text-xs text-gray-500 text-center mt-5">
+        <p className="text-xs text-brand-stone-500 dark:text-slate-500 text-center mt-5">
           Your app data stays linked to your existing client ID. Clerk only replaces the login method.
         </p>
       </div>
@@ -135,7 +136,7 @@ function ClerkAuthRoutes({ onClaim }) {
       <Route
         path="/sign-in/*"
         element={
-          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
+          <div className="min-h-screen flex items-center justify-center bg-brand-sanctuary dark:bg-brand-midnight px-4">
             <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" afterSignInUrl="/claim-account" />
           </div>
         }
@@ -143,7 +144,7 @@ function ClerkAuthRoutes({ onClaim }) {
       <Route
         path="/sign-up/*"
         element={
-          <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-white to-emerald-50 px-4">
+          <div className="min-h-screen flex items-center justify-center bg-brand-sanctuary dark:bg-brand-midnight px-4">
             <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" afterSignUpUrl="/claim-account" />
           </div>
         }
@@ -181,26 +182,16 @@ function FeatureGate({ feature, children }) {
 
 function BottomNav() {
   const location = useLocation();
-  const { theme } = useTheme();
   const navItems = [
     { path: '/', icon: HomeIcon, label: 'Home' },
-    { path: '/curriculum', icon: BookOpen, label: 'Curriculum' },
-    { path: '/assessments', icon: ClipboardList, label: 'Assessments' },
+    { path: '/exercises', icon: BookOpen, label: 'Practice' },
+    { path: '/inbox', icon: MessageSquare, label: 'Messages' },
     { path: '/journal', icon: BookHeart, label: 'Journal' },
-    { path: '/therapy', icon: Handshake, label: 'Integration' },
+    { path: '/profile', icon: Handshake, label: 'Profile' },
   ];
 
-  const accentMap = {
-    blue: { active: 'text-blue-600', bg: 'bg-blue-100' },
-    emerald: { active: 'text-emerald-600', bg: 'bg-emerald-100' },
-    amber: { active: 'text-amber-600', bg: 'bg-amber-100' },
-    purple: { active: 'text-amber-600', bg: 'bg-amber-100' },
-    indigo: { active: 'text-indigo-400', bg: 'bg-indigo-900' },
-  };
-  const accent = accentMap[theme.accent] || accentMap.amber;
-
   return (
-    <nav className={`fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg border-t shadow-[0_-2px_10px_rgba(0,0,0,0.06)] ${theme.isDark ? 'bg-slate-900/95 border-slate-700/50' : 'bg-white/95 border-gray-200/50'}`}>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 backdrop-blur-lg border-t shadow-[0_-2px_10px_rgba(120,80,40,0.06)] bg-white/90 dark:bg-brand-midnight/90 border-brand-stone-200/50 dark:border-slate-800/60">
       <div className="max-w-lg mx-auto flex justify-around items-center h-16 px-2">
         {navItems.map((item) => {
           const Icon = item.icon;
@@ -211,11 +202,11 @@ function BottomNav() {
               to={item.path}
               className={`flex flex-col items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 min-w-[60px] ${
                 isActive
-                  ? accent.active
-                  : theme.isDark ? 'text-slate-500 hover:text-slate-300' : 'text-gray-400 hover:text-gray-600'
+                  ? 'text-brand-gold-700 dark:text-brand-gold-500'
+                  : 'text-brand-stone-400 dark:text-slate-500 hover:text-brand-stone-600 dark:hover:text-slate-300'
               }`}
             >
-              <div className={`p-1 rounded-lg transition-all duration-200 ${isActive ? accent.bg : ''}`}>
+              <div className={`p-1 rounded-lg transition-all duration-200 ${isActive ? 'bg-brand-gold-50 dark:bg-brand-gold-950/30' : ''}`}>
                 <Icon className={`w-5 h-5 ${isActive ? 'stroke-[2.5]' : ''}`} />
               </div>
               <span className={`text-[10px] leading-tight ${isActive ? 'font-semibold' : 'font-medium'}`}>
@@ -280,7 +271,7 @@ function App() {
   useEffect(() => {
     if (!isAuthenticated || !currentClient) return;
     if (currentClient.user_role === 'therapist') {
-      setOnboardingChecked(true);
+      queueMicrotask(() => setOnboardingChecked(true));
       return;
     }
 
@@ -367,10 +358,11 @@ function App() {
 }
 
 function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, currentClient, handleClaim, handleLogout, showOnboarding, onboardingChecked, onOnboardingComplete }) {
-  const { theme } = useTheme();
   const location = useLocation();
-  const bgClass = isAuthenticated ? `bg-gradient-to-br ${theme.primary}` : '';
+  const bgClass = isAuthenticated ? 'bg-brand-sanctuary dark:bg-brand-midnight' : '';
   const [unreadMsgCount, setUnreadMsgCount] = useState(0);
+  const isTherapist = currentClient?.user_role === 'therapist';
+  const messagePath = isTherapist ? '/advisor-messages' : '/inbox';
 
   const fetchUnreadCount = useCallback(async () => {
     if (!currentClient?.id) return;
@@ -435,76 +427,50 @@ function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, 
         )
       ) : (
         <>
-          <header className={`sticky top-0 z-50 backdrop-blur-lg border-b shadow-sm ${theme.isDark ? 'bg-slate-900/80 border-slate-700/50' : 'bg-white/80 border-gray-200/50'}`}>
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                  <div className="flex justify-between items-center h-14">
-                    <Link to="/" className="flex items-center gap-2">
-                      <img src="/logo.png" alt="ITS" className="w-9 h-auto" />
-                      <h1 className="text-base font-bold bg-gradient-to-r from-amber-700 to-emerald-700 bg-clip-text text-transparent leading-tight">
-                        Internal Family<br/>Systems
-                      </h1>
-                    </Link>
-                    <div className="flex items-center gap-1">
-                      {currentClient?.user_role === 'therapist' && (
-                        <Link
-                          to="/therapist-dashboard"
-                          className={`p-2 rounded-lg transition-all ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
-                          title="Advisor Dashboard"
-                        >
-                          <ClipboardList className="w-5 h-5" />
-                        </Link>
-                      )}
-                      <Link
-                        to={currentClient?.user_role === 'therapist' ? '/advisor-messages' : '/inbox'}
-                        className={`p-2 rounded-lg transition-all relative ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
-                        title="Messages"
-                      >
-                        <MessageSquare className="w-5 h-5" />
-                        {unreadMsgCount > 0 && (
-                          <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center text-[10px] font-bold text-white bg-red-500 rounded-full px-1 animate-pulse">
-                            {unreadMsgCount > 99 ? '99+' : unreadMsgCount}
-                          </span>
-                        )}
-                      </Link>
-                      <Link
-                        to="/settings"
-                        className={`p-2 rounded-lg transition-all ${theme.isDark ? 'text-slate-400 hover:text-amber-400 hover:bg-slate-800' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50'}`}
-                        title="Settings"
-                      >
-                        <SettingsIcon className="w-5 h-5" />
-                      </Link>
-                      <Link
-                        to="/profile"
-                        className={`p-2 rounded-lg transition-all ${theme.isDark ? 'hover:bg-slate-800' : 'hover:bg-amber-50'}`}
-                      >
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-emerald-600 flex items-center justify-center text-white text-xs font-bold">
-                          {currentClient?.name?.charAt(0) || '?'}
-                        </div>
-                      </Link>
-                      <div className="px-1">
-                        <UserButton afterSignOutUrl="/sign-in">
-                          <UserButton.UserProfilePage
-                            label="Assessment Results"
-                            labelIcon={<ClipboardList className="w-4 h-4" />}
-                            url="assessment-results"
-                          >
-                            <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-gradient-to-br from-amber-50 via-white to-emerald-50">
-                              <Profile client={currentClient} embedded />
-                            </div>
-                          </UserButton.UserProfilePage>
-                        </UserButton>
+          <Navbar
+            unreadCount={unreadMsgCount}
+            messagePath={messagePath}
+            rightSlot={
+              <>
+                {isTherapist && (
+                  <Link
+                    to="/therapist-dashboard"
+                    className="p-2.5 rounded-xl transition-all text-brand-stone-500 dark:text-slate-400 hover:text-brand-gold-700 dark:hover:text-brand-gold-500 hover:bg-brand-gold-50 dark:hover:bg-slate-800/50"
+                    title="Advisor Dashboard"
+                  >
+                    <ClipboardList className="w-5 h-5" />
+                  </Link>
+                )}
+                <Link
+                  to="/settings"
+                  className="p-2.5 rounded-xl transition-all text-brand-stone-500 dark:text-slate-400 hover:text-brand-gold-700 dark:hover:text-brand-gold-500 hover:bg-brand-gold-50 dark:hover:bg-slate-800/50"
+                  title="Settings"
+                >
+                  <SettingsIcon className="w-5 h-5" />
+                </Link>
+                <div className="px-1">
+                  <UserButton afterSignOutUrl="/sign-in">
+                    <UserButton.UserProfilePage
+                      label="Assessment Results"
+                      labelIcon={<ClipboardList className="w-4 h-4" />}
+                      url="assessment-results"
+                    >
+                      <div className="max-h-[calc(100vh-10rem)] overflow-y-auto rounded-xl bg-brand-sanctuary dark:bg-brand-midnight">
+                        <Profile client={currentClient} embedded />
                       </div>
-                      <button
-                        onClick={handleLogout}
-                        className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all"
-                        title="Logout"
-                      >
-                        <LogOut className="w-5 h-5" />
-                      </button>
-                    </div>
-                  </div>
+                    </UserButton.UserProfilePage>
+                  </UserButton>
                 </div>
-              </header>
+                <button
+                  onClick={handleLogout}
+                  className="p-2.5 rounded-xl transition-all text-brand-stone-500 dark:text-slate-400 hover:text-brand-stone-900 dark:hover:text-slate-100 hover:bg-brand-stone-100 dark:hover:bg-slate-800/50"
+                  title="Logout"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </>
+            }
+          />
               
               <div className="pb-20">
               <Routes>
