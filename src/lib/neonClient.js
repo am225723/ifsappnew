@@ -84,6 +84,16 @@ class NeonQueryBuilder {
     return this;
   }
 
+  like(column, value) {
+    this.payload.filters.push({ op: 'like', column, value });
+    return this;
+  }
+
+  ilike(column, value) {
+    this.payload.filters.push({ op: 'ilike', column, value });
+    return this;
+  }
+
   order(column, options = {}) {
     this.payload.order.push({ column, ascending: options.ascending !== false });
     return this;
