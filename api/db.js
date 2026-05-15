@@ -62,6 +62,10 @@ function buildWhere(filters = [], params) {
       });
       return `${column} IN (${placeholders.join(', ')})`;
     }
+    if (filter.op === 'like' || filter.op === 'ilike') {
+      params.push(filter.value);
+      return `${column} ${filter.op.toUpperCase()} $${params.length}`;
+    }
     throw new Error(`Unsupported filter operation: ${filter.op}`);
   });
   return ` WHERE ${clauses.join(' AND ')}`;
