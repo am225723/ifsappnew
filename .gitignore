@@ -114,3 +114,4 @@ android/
 
 # Local environment files
 .env.local
+.env.example
