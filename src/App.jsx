@@ -376,14 +376,15 @@ function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, 
     if (!currentClient?.id) return;
     try {
       const isTherapist = currentClient.user_role === 'therapist';
-      let query = supabase.from('ifs_messages').select('id', { count: 'exact', head: true }).is('read_at', null);
+      let query = supabase.from('ifs_messages').select('*');
       if (isTherapist) {
         query = query.eq('therapist_id', currentClient.id).eq('sender_role', 'client');
       } else {
         query = query.eq('client_id', currentClient.id).eq('sender_role', 'therapist');
       }
-      const { count } = await query;
-      setUnreadMsgCount(count || 0);
+      const { data, error } = await query;
+      if (error) throw error;
+      setUnreadMsgCount((data || []).filter((message) => !message.read_at).length);
     } catch (e) {
       console.error('Error fetching unread count:', e);
     }
