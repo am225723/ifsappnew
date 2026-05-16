@@ -44,12 +44,12 @@ const assessmentDefinitions = [
     title: 'IFS Wound Assessment',
     subtitle: 'Discover which inner child wounds may be affecting you',
     icon: Heart,
-    gradient: 'from-rose-500 to-emerald-600',
-    lightBg: 'from-rose-50 to-emerald-50',
+    gradient: 'from-brand-gold-600 to-brand-emerald-700',
+    lightBg: 'from-brand-gold-50 to-brand-emerald-50',
     categories: {
-      abandonment: { label: 'Abandonment', icon: Users, color: '#6366F1', description: 'Fear of being left or forgotten, difficulty trusting others will stay' },
-      shame: { label: 'Shame', icon: Eye, color: '#EC4899', description: 'Deep sense of being flawed or defective, hiding your true self' },
-      neglect: { label: 'Neglect', icon: Heart, color: '#8B5CF6', description: 'Feeling unseen, unheard, or emotionally invisible to caregivers' },
+      abandonment: { label: 'Abandonment', icon: Users, color: '#059669', description: 'Fear of being left or forgotten, difficulty trusting others will stay' },
+      shame: { label: 'Shame', icon: Eye, color: '#D97706', description: 'Deep sense of being flawed or defective, hiding your true self' },
+      neglect: { label: 'Neglect', icon: Heart, color: '#78716C', description: 'Feeling unseen, unheard, or emotionally invisible to caregivers' },
       betrayal: { label: 'Betrayal', icon: Shield, color: '#F59E0B', description: 'Difficulty trusting after broken promises or violated boundaries' },
       helplessness: { label: 'Helplessness', icon: AlertTriangle, color: '#EF4444', description: 'Feeling powerless, trapped, or unable to change your circumstances' }
     },
@@ -93,12 +93,12 @@ const assessmentDefinitions = [
     title: 'Identify Your Protective Parts',
     subtitle: 'Learn which protective parts are most active in your system',
     icon: Shield,
-    gradient: 'from-blue-500 to-amber-600',
-    lightBg: 'from-blue-50 to-stone-50',
+    gradient: 'from-brand-emerald-600 to-brand-gold-600',
+    lightBg: 'from-brand-emerald-50 to-brand-stone-50',
     categories: {
-      manager: { label: 'Manager Parts', icon: Shield, color: '#3B82F6', description: 'Proactive protectors that try to prevent pain through control, planning, and perfectionism' },
+      manager: { label: 'Manager Parts', icon: Shield, color: '#57534E', description: 'Proactive protectors that try to prevent pain through control, planning, and perfectionism' },
       firefighter: { label: 'Firefighter Parts', icon: Flame, color: '#F59E0B', description: 'Reactive protectors that numb or distract when pain surfaces through impulsive behaviors' },
-      exile: { label: 'Exile Parts', icon: Heart, color: '#EC4899', description: 'Young, vulnerable parts carrying wounds of pain, shame, fear, and loneliness' }
+      exile: { label: 'Exile Parts', icon: Heart, color: '#D97706', description: 'Young, vulnerable parts carrying wounds of pain, shame, fear, and loneliness' }
     },
     questions: [
       { id: 1, text: 'I plan everything carefully to avoid surprises or chaos.', category: 'manager' },
@@ -127,13 +127,13 @@ const assessmentDefinitions = [
     lightBg: 'from-emerald-50 to-teal-50',
     categories: {
       calmness: { label: 'Calmness', icon: Activity, color: '#06B6D4', description: 'Ability to remain centered and peaceful even in stressful situations' },
-      curiosity: { label: 'Curiosity', icon: Eye, color: '#8B5CF6', description: 'Genuine interest in understanding your inner experiences without judgment' },
-      compassion: { label: 'Compassion', icon: Heart, color: '#EC4899', description: 'Warmth and kindness toward yourself and your parts, especially those in pain' },
+      curiosity: { label: 'Curiosity', icon: Eye, color: '#78716C', description: 'Genuine interest in understanding your inner experiences without judgment' },
+      compassion: { label: 'Compassion', icon: Heart, color: '#D97706', description: 'Warmth and kindness toward yourself and your parts, especially those in pain' },
       confidence: { label: 'Confidence', icon: Star, color: '#F59E0B', description: 'Trust in your ability to handle whatever arises in your inner and outer world' },
       courage: { label: 'Courage', icon: Shield, color: '#EF4444', description: 'Willingness to face your fears and take steps toward healing' },
-      clarity: { label: 'Clarity', icon: Brain, color: '#3B82F6', description: 'Ability to see situations clearly without being clouded by parts\' perspectives' },
+      clarity: { label: 'Clarity', icon: Brain, color: '#57534E', description: 'Ability to see situations clearly without being clouded by parts\' perspectives' },
       creativity: { label: 'Creativity', icon: Sparkles, color: '#10B981', description: 'Capacity to think flexibly and find novel solutions to challenges' },
-      connectedness: { label: 'Connectedness', icon: Users, color: '#6366F1', description: 'Feeling of connection to others, nature, and something larger than yourself' }
+      connectedness: { label: 'Connectedness', icon: Users, color: '#059669', description: 'Feeling of connection to others, nature, and something larger than yourself' }
     },
     questions: [
       { id: 1, text: 'I can remain calm even in stressful situations.', category: 'calmness' },
@@ -159,12 +159,12 @@ const assessmentDefinitions = [
     title: 'Attachment Style Assessment',
     subtitle: 'Understand your relationship patterns and attachment style',
     icon: Users,
-    gradient: 'from-violet-500 to-indigo-600',
-    lightBg: 'from-violet-50 to-indigo-50',
+    gradient: 'from-brand-stone-600 to-brand-gold-600',
+    lightBg: 'from-brand-stone-50 to-brand-gold-50',
     categories: {
       secure: { label: 'Secure', icon: Heart, color: '#10B981', description: 'Comfortable with intimacy and independence; trusts others and self' },
       anxious: { label: 'Anxious-Preoccupied', icon: AlertTriangle, color: '#F59E0B', description: 'Craves closeness but fears rejection; hypervigilant to relationship cues' },
-      avoidant: { label: 'Dismissive-Avoidant', icon: Shield, color: '#6366F1', description: 'Values independence highly; uncomfortable with vulnerability or emotional closeness' },
+      avoidant: { label: 'Dismissive-Avoidant', icon: Shield, color: '#059669', description: 'Values independence highly; uncomfortable with vulnerability or emotional closeness' },
       disorganized: { label: 'Fearful-Avoidant', icon: Brain, color: '#EF4444', description: 'Desires closeness but fears it; oscillates between approach and withdrawal' }
     },
     questions: [
@@ -191,14 +191,6 @@ const assessmentDefinitions = [
     ]
   }
 ];
-
-const scaleLabels = {
-  1: 'Strongly Disagree',
-  2: 'Disagree',
-  3: 'Neutral',
-  4: 'Agree',
-  5: 'Strongly Agree'
-};
 
 const ASSESSMENT_AUDIO = {
   wounds: '/audio/assessments/wound-assessment-intro.mp3',
@@ -558,8 +550,8 @@ export default function Assessments() {
       return { level: 'Growing Edge', color: 'text-orange-600', bg: 'bg-orange-100', barColor: 'bg-orange-500' };
     }
     if (assessmentId === 'attachment') {
-      if (average >= 4) return { level: 'Dominant', color: 'text-violet-600', bg: 'bg-violet-100', barColor: 'bg-violet-500' };
-      if (average >= 3) return { level: 'Present', color: 'text-indigo-600', bg: 'bg-indigo-100', barColor: 'bg-indigo-500' };
+      if (average >= 4) return { level: 'Dominant', color: 'text-brand-gold-700', bg: 'bg-brand-gold-50', barColor: 'bg-brand-gold-600' };
+      if (average >= 3) return { level: 'Present', color: 'text-brand-emerald-700', bg: 'bg-brand-emerald-50', barColor: 'bg-brand-emerald-600' };
       return { level: 'Minimal', color: 'text-slate-600', bg: 'bg-slate-100', barColor: 'bg-slate-400' };
     }
     if (average >= 4) return { level: 'High', color: 'text-red-600', bg: 'bg-red-100', barColor: 'bg-red-500' };
@@ -579,7 +571,7 @@ export default function Assessments() {
       name: partDef.name,
       role: partDef.role,
       notes: `${partDef.description}\n\nStrategy: ${partDef.strategy}`,
-      color: partDef.type === 'manager' ? '#3B82F6' : partDef.type === 'firefighter' ? '#F59E0B' : '#EC4899'
+      color: partDef.type === 'manager' ? '#57534E' : partDef.type === 'firefighter' ? '#F59E0B' : '#D97706'
     });
     setAddedParts(prev => ({ ...prev, [partDef.name]: 'added' }));
     setTimeout(() => saveToSupabase(), 500);
@@ -598,7 +590,7 @@ export default function Assessments() {
         name: partDef.name,
         role: partDef.role,
         notes: `${partDef.description}\n\nStrategy: ${partDef.strategy}`,
-        color: partDef.type === 'manager' ? '#3B82F6' : partDef.type === 'firefighter' ? '#F59E0B' : '#EC4899'
+        color: partDef.type === 'manager' ? '#57534E' : partDef.type === 'firefighter' ? '#F59E0B' : '#D97706'
       });
       setAddedParts(prev => ({ ...prev, [partDef.name]: 'added' }));
       addedCount++;
@@ -632,14 +624,14 @@ export default function Assessments() {
             Back to Assessments
           </button>
 
-          <div className={`${theme.cardBg} rounded-2xl shadow-lg p-8 border ${theme.isDark ? 'border-slate-700' : 'border-gray-100'} text-center`}>
+          <div className="soft-card p-8 text-center">
             <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${assessment.gradient} flex items-center justify-center mx-auto mb-5`}>
               <assessment.icon className="w-8 h-8 text-white" />
             </div>
-            <h1 className={`text-2xl font-bold mb-2 ${theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+            <h1 className="text-2xl font-serif font-normal mb-2 text-brand-stone-900 dark:text-slate-100">
               {assessment.title}
             </h1>
-            <p className={`text-sm mb-1 ${theme.isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+            <p className="text-sm mb-1 text-brand-stone-500 dark:text-slate-400">
               {assessment.subtitle}
             </p>
             {isRetake && (
@@ -648,8 +640,8 @@ export default function Assessments() {
               </span>
             )}
 
-            <div className={`my-6 p-5 rounded-xl border ${theme.isDark ? 'bg-slate-800/50 border-slate-700' : 'bg-gray-50 border-gray-200'} text-left`}>
-              <p className={`text-sm leading-relaxed ${theme.isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+            <div className="my-6 p-5 rounded-xl border bg-brand-stone-50 dark:bg-slate-800/50 border-brand-stone-200 dark:border-slate-700 text-left">
+              <p className="text-sm leading-relaxed text-brand-stone-600 dark:text-slate-300">
                 {assessment.id === 'wounds' && 'This assessment helps you discover which inner child wounds may be affecting your life today. You\'ll rate 25 statements based on how strongly they resonate with you. There are no right or wrong answers — this is about understanding your inner world with curiosity and compassion.'}
                 {assessment.id === 'parts' && 'This assessment helps you identify which protective parts are most active in your inner system — Managers, Firefighters, and Exiles. You\'ll rate 15 statements about your common experiences and reactions.'}
                 {assessment.id === 'self-energy' && 'This assessment evaluates your current connection to the eight qualities of Self — Calmness, Curiosity, Compassion, Confidence, Courage, Clarity, Creativity, and Connectedness. Your results will show where your Self-energy is strongest.'}
@@ -663,7 +655,7 @@ export default function Assessments() {
 
             <button
               onClick={() => setShowIntro(false)}
-              className={`w-full py-3.5 rounded-xl font-semibold text-white bg-gradient-to-r ${assessment.gradient} hover:opacity-90 transition-all text-base`}
+              className="btn-sanctuary-primary w-full"
             >
               {isRetake ? 'Begin Retake' : 'Begin Assessment'}
             </button>
@@ -691,7 +683,7 @@ export default function Assessments() {
               <p className={`${theme.isDark ? 'text-slate-300' : 'text-gray-600'}`}>Results are loading or not yet available. Please try retaking the assessment.</p>
               <button
                 onClick={() => { setShowResults(false); setShowIntro(true); setAnswers({}); }}
-                className="mt-4 px-6 py-3 bg-gradient-to-r from-amber-600 to-emerald-600 text-white rounded-xl font-medium hover:from-amber-700 hover:to-emerald-700"
+                className="mt-4 px-6 py-3 btn-sanctuary-primary"
               >
                 Retake Assessment
               </button>
@@ -791,7 +783,7 @@ export default function Assessments() {
                 <p>Remember: These wounds are not permanent. With IFS work, you can unburden the exiles carrying these wounds and transform the protective parts guarding them.</p>
               </div>
             )}
-            {activeAssessment === 'wounds' && results.protectorPatterns && Object.keys(results.protectorPatterns).some(k => results.protectorPatterns[k]?.answer === 'Yes') && (
+            {activeAssessment === 'wounds' && results.protectorPatterns && Object.values(results.protectorPatterns).some(val => val?.answer === 'Yes') && (
               <div className={`mt-6 p-5 rounded-xl ${theme.isDark ? 'bg-amber-900/20 border border-amber-800/30' : 'bg-amber-50 border border-amber-200'}`}>
                 <h4 className={`font-bold mb-3 flex items-center gap-2 ${theme.isDark ? 'text-amber-400' : 'text-amber-800'}`}>
                   <Shield className="w-5 h-5" />
@@ -799,7 +791,7 @@ export default function Assessments() {
                 </h4>
                 <div className="space-y-2">
                   {Object.entries(results.protectorPatterns)
-                    .filter(([_, val]) => val.answer === 'Yes')
+                    .filter(([, val]) => val.answer === 'Yes')
                     .map(([category, val]) => (
                       <div key={category} className={`flex items-center gap-2 text-sm ${theme.isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                         <CheckCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
@@ -842,9 +834,9 @@ export default function Assessments() {
             if (identifiedParts.length === 0) return null;
 
             const typeColors = {
-              manager: { bg: 'from-blue-500 to-blue-600', light: theme.isDark ? 'bg-blue-900/30 border-blue-800' : 'bg-blue-50 border-blue-200', text: theme.isDark ? 'text-blue-300' : 'text-blue-700', badge: 'bg-blue-100 text-blue-700' },
+              manager: { bg: 'from-brand-stone-500 to-brand-stone-600', light: theme.isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-brand-stone-50 border-brand-stone-200', text: theme.isDark ? 'text-slate-300' : 'text-brand-stone-600', badge: 'bg-brand-stone-100 text-brand-stone-600' },
               firefighter: { bg: 'from-amber-500 to-orange-600', light: theme.isDark ? 'bg-amber-900/30 border-amber-800' : 'bg-amber-50 border-amber-200', text: theme.isDark ? 'text-amber-300' : 'text-amber-700', badge: 'bg-amber-100 text-amber-700' },
-              exile: { bg: 'from-emerald-500 to-rose-600', light: theme.isDark ? 'bg-emerald-900/30 border-emerald-800' : 'bg-emerald-50 border-emerald-200', text: theme.isDark ? 'text-emerald-300' : 'text-emerald-700', badge: 'bg-emerald-100 text-emerald-700' }
+              exile: { bg: 'from-brand-emerald-600 to-brand-gold-600', light: theme.isDark ? 'bg-emerald-900/30 border-emerald-800' : 'bg-emerald-50 border-emerald-200', text: theme.isDark ? 'text-emerald-300' : 'text-emerald-700', badge: 'bg-brand-emerald-50 text-brand-emerald-700' }
             };
             const typeLabels = { manager: 'Manager', firefighter: 'Firefighter', exile: 'Exile' };
             const typeIcons = { manager: Shield, firefighter: Flame, exile: Heart };
@@ -866,7 +858,7 @@ export default function Assessments() {
                       className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all ${
                         identifiedParts.every(p => addedParts[p.name])
                           ? (theme.isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500') + ' cursor-default'
-                          : 'bg-gradient-to-r from-emerald-600 to-teal-600 text-white hover:from-emerald-700 hover:to-teal-700'
+                          : 'bg-gradient-to-r from-brand-emerald-600 to-brand-emerald-700 text-white hover:brightness-105'
                       }`}
                       disabled={identifiedParts.every(p => addedParts[p.name])}
                     >
@@ -934,7 +926,7 @@ export default function Assessments() {
                                       ? 'bg-green-100 text-green-700 cursor-default'
                                       : isAdded === 'exists'
                                       ? (theme.isDark ? 'bg-slate-700 text-slate-400' : 'bg-gray-100 text-gray-500') + ' cursor-default'
-                                      : 'bg-gradient-to-r from-amber-600 to-emerald-600 text-white hover:from-amber-700 hover:to-emerald-700 shadow-sm'
+                                      : 'btn-sanctuary-primary'
                                   }`}
                                 >
                                   {isAdded === 'added' ? (
@@ -970,7 +962,7 @@ export default function Assessments() {
                 return (
                   <button
                     onClick={() => navigate('/')}
-                    className="w-full max-w-md px-6 py-3.5 bg-gradient-to-r from-amber-500 to-emerald-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-emerald-600 transition-all flex items-center justify-center gap-2 shadow-lg"
+                    className="w-full max-w-md px-6 py-3.5 btn-sanctuary-primary"
                   >
                     Continue Setup
                     <ArrowRight className="w-4 h-4" />
@@ -989,7 +981,7 @@ export default function Assessments() {
               </button>
               <button
                 onClick={() => { setActiveAssessment(null); setShowResults(false); setAnswers({}); }}
-                className="px-6 py-3 bg-gradient-to-r from-amber-600 to-emerald-600 text-white rounded-xl font-medium hover:from-amber-700 hover:to-emerald-700"
+                className="px-6 py-3 btn-sanctuary-primary"
               >
                 View All Assessments
               </button>
@@ -1143,7 +1135,7 @@ export default function Assessments() {
               disabled={!allAnswered || saving}
               className={`px-8 py-3 rounded-xl font-medium transition-all ${
                 allAnswered
-                  ? 'bg-gradient-to-r from-amber-600 to-emerald-600 text-white hover:from-amber-700 hover:to-emerald-700 shadow-lg'
+                  ? 'btn-sanctuary-primary'
                   : 'bg-gray-300 text-gray-500 cursor-not-allowed'
               }`}
             >
@@ -1157,7 +1149,7 @@ export default function Assessments() {
 
   return (
     <div className={`min-h-screen ${theme.isDark ? 'text-slate-100' : ''}`}>
-      <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-6 py-12 lg:py-20">
         <Link
           to="/"
           className={`inline-flex items-center gap-2 mb-6 ${theme.isDark ? 'text-slate-300 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
@@ -1167,13 +1159,13 @@ export default function Assessments() {
         </Link>
 
         <div className="text-center mb-10">
-          <div className="w-20 h-20 bg-gradient-to-br from-amber-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+          <div className="w-16 h-16 bg-gradient-to-br from-brand-gold-500 to-brand-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-brand-gold-500/20">
             <CheckCircle className="w-10 h-10 text-white" />
           </div>
-          <h1 className={`text-4xl font-bold mb-3 ${theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h1 className="text-4xl lg:text-6xl font-serif font-normal mb-4 text-brand-stone-900 dark:text-slate-100">
             Self-Assessments
           </h1>
-          <p className={`text-lg max-w-2xl mx-auto ${theme.isDark ? 'text-slate-300' : 'text-gray-600'}`}>
+          <p className="text-lg max-w-2xl mx-auto text-brand-stone-600 dark:text-slate-400">
             Gain insights into your inner world through guided self-assessments. These are reflective exercises to increase self-awareness, not diagnostic tools.
           </p>
         </div>
@@ -1187,33 +1179,33 @@ export default function Assessments() {
             return (
               <div
                 key={assessment.id}
-                className={`${theme.cardBg} rounded-2xl shadow-lg border ${theme.isDark ? 'border-slate-700' : 'border-gray-100'} overflow-hidden ${getAnimationClass('transition')} ${isRestricted ? 'opacity-60' : 'hover:shadow-xl'}`}
+                className={`soft-card overflow-hidden ${getAnimationClass('transition')} ${isRestricted ? 'opacity-60' : 'hover:shadow-xl'}`}
               >
                 <div className={`bg-gradient-to-br ${assessment.gradient} p-6`}>
                   <Icon className="w-10 h-10 text-white mb-3" />
-                  <h2 className="text-xl font-bold text-white">{assessment.title}</h2>
+                  <h2 className="text-xl font-serif font-semibold text-white">{assessment.title}</h2>
                   <p className="text-white/80 text-sm mt-1">{assessment.subtitle}</p>
                 </div>
                 <div className="p-6">
                   {isRestricted ? (
                     <div className={`text-center py-4`}>
                       <Lock className={`w-8 h-8 mx-auto mb-2 ${theme.isDark ? 'text-slate-500' : 'text-gray-400'}`} />
-                      <p className={`text-sm font-medium ${theme.isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                      <p className="text-sm font-medium text-brand-stone-500 dark:text-slate-400">
                         Contact your advisor to unlock this assessment
                       </p>
                     </div>
                   ) : (
                     <>
-                      <div className={`flex items-center gap-2 mb-4 text-sm ${theme.isDark ? 'text-slate-400' : 'text-gray-500'}`}>
+                      <div className="flex items-center gap-2 mb-4 text-sm text-brand-stone-500 dark:text-slate-400">
                         <Clock className="w-4 h-4" />
                         <span>{assessment.questions.length} questions{assessment.protectorQuestions ? ` + ${assessment.protectorQuestions.length} optional` : ''} · ~{assessment.questions.length > 20 ? '8' : '5'} min</span>
                       </div>
 
                       {hasResults && (
-                        <div className={`mb-4 p-3 rounded-xl ${theme.isDark ? 'bg-slate-800' : 'bg-gray-50'}`}>
+                        <div className="mb-4 p-3 rounded-xl bg-brand-stone-50 dark:bg-slate-800/60">
                           <div className="flex items-center gap-2 mb-2">
-                            <Award className="w-4 h-4 text-green-500" />
-                            <span className={`text-sm font-medium ${theme.isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+                            <Award className="w-4 h-4 text-brand-emerald-600" />
+                            <span className="text-sm font-medium text-brand-stone-700 dark:text-slate-300">
                               Completed {new Date(hasResults.completedAt).toLocaleDateString()}
                             </span>
                           </div>
@@ -1221,7 +1213,7 @@ export default function Assessments() {
                             const cat = assessment.categories[catId];
                             return (
                               <div key={catId} className="flex items-center justify-between text-sm mb-1">
-                                <span className={theme.isDark ? 'text-slate-400' : 'text-gray-600'}>{cat?.label}</span>
+                                <span className="text-brand-stone-600 dark:text-slate-400">{cat?.label}</span>
                                 <span className="font-medium" style={{ color: cat?.color }}>{data.average.toFixed(1)}/5</span>
                               </div>
                             );
@@ -1247,7 +1239,7 @@ export default function Assessments() {
                               setActiveAssessment(assessment.id);
                               setShowResults(true);
                             }}
-                            className={`flex-1 py-2.5 rounded-xl font-medium text-sm ${theme.isDark ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'} ${getAnimationClass('transition')}`}
+                            className={`flex-1 py-2.5 rounded-xl font-medium text-sm btn-sanctuary-secondary ${getAnimationClass('transition')}`}
                           >
                             View Results
                           </button>
@@ -1262,27 +1254,27 @@ export default function Assessments() {
         </div>
 
         {Object.keys(savedResults).length > 0 && (
-          <div className={`${theme.cardBg} rounded-2xl shadow-lg p-8 border ${theme.isDark ? 'border-slate-700' : 'border-gray-100'}`}>
-            <h2 className={`text-2xl font-bold mb-6 ${theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+          <div className="soft-card p-8">
+            <h2 className="text-2xl font-serif font-normal mb-6 text-brand-stone-900 dark:text-slate-100">
               Your Assessment Overview
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {assessmentDefinitions.map(assessment => {
                 const results = savedResults[assessment.id];
                 if (!results) return (
-                  <div key={assessment.id} className={`p-4 rounded-xl ${theme.isDark ? 'bg-slate-800' : 'bg-gray-50'} text-center`}>
+                  <div key={assessment.id} className="p-4 rounded-xl bg-brand-stone-50 dark:bg-slate-800/60 text-center">
                     <assessment.icon className={`w-8 h-8 mx-auto mb-2 ${theme.isDark ? 'text-slate-600' : 'text-gray-300'}`} />
-                    <p className={`text-sm ${theme.isDark ? 'text-slate-500' : 'text-gray-400'}`}>Not yet completed</p>
+                    <p className="text-sm text-brand-stone-400 dark:text-slate-500">Not yet completed</p>
                   </div>
                 );
 
                 return (
-                  <div key={assessment.id} className={`p-4 rounded-xl ${theme.isDark ? 'bg-slate-800' : 'bg-gray-50'}`}>
+                  <div key={assessment.id} className="p-4 rounded-xl bg-brand-stone-50 dark:bg-slate-800/60">
                     <div className="flex items-center gap-2 mb-3">
                       <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${assessment.gradient} flex items-center justify-center`}>
                         <assessment.icon className="w-4 h-4 text-white" />
                       </div>
-                      <h3 className={`font-semibold text-sm ${theme.isDark ? 'text-white' : 'text-gray-900'}`}>
+                      <h3 className="font-semibold text-sm text-brand-stone-900 dark:text-slate-100">
                         {assessment.title.split(' ').slice(0, 2).join(' ')}
                       </h3>
                     </div>
@@ -1293,7 +1285,7 @@ export default function Assessments() {
                         return (
                           <div key={catId}>
                             <div className="flex justify-between text-xs mb-0.5">
-                              <span className={theme.isDark ? 'text-slate-400' : 'text-gray-600'}>{cat?.label}</span>
+                              <span className="text-brand-stone-600 dark:text-slate-400">{cat?.label}</span>
                               <span className={`font-medium ${scoreLevel.color}`}>{data.average.toFixed(1)}</span>
                             </div>
                             <div className={`w-full h-1.5 rounded-full ${theme.isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>

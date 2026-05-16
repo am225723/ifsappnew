@@ -61,8 +61,8 @@ const Exercises = () => {
           duration: '20 min',
           type: 'practice',
           difficulty: 'Intermediate',
-          description: 'Practice embodying the 8 C\'s of Self: curiosity, calmness, compassion, confidence, courage, creativity, clarity, and connectedness',
-          transcript: `Today we\'ll explore the qualities of your Self... Each quality is already within you...`,
+          description: "Practice embodying the 8 C's of Self: curiosity, calmness, compassion, confidence, courage, creativity, clarity, and connectedness",
+          transcript: `Today we'll explore the qualities of your Self... Each quality is already within you...`,
           audioUrl: '/audio/exercises/self-qualities.mp3',
           benefits: ['Self-leadership', 'Emotional regulation', 'Inner wisdom']
         }
@@ -114,7 +114,7 @@ const Exercises = () => {
       id: 'parts-work',
       title: 'Parts Work',
       description: 'Work directly with your internal parts',
-      color: 'from-blue-400 to-blue-600',
+      color: 'from-brand-stone-500 to-brand-stone-600',
       icon: Shield,
       exercises: [
         {
@@ -156,7 +156,7 @@ const Exercises = () => {
       id: 'breathing',
       title: 'Breathing Exercises',
       description: 'Regulate your nervous system through breath',
-      color: 'from-green-400 to-green-600',
+      color: 'from-brand-emerald-600 to-brand-emerald-700',
       icon: Wind,
       exercises: [
         {
@@ -359,26 +359,26 @@ const Exercises = () => {
 
   if (selectedExercise && selectedExercise.isBreathing) {
     const phaseConfig = {
-      inhale: { text: 'Inhale', color: 'from-blue-400 to-blue-600', duration: selectedExercise.inhale },
+      inhale: { text: 'Inhale', color: 'from-brand-stone-500 to-brand-stone-600', duration: selectedExercise.inhale },
       hold: { text: 'Hold', color: 'from-amber-400 to-amber-600', duration: selectedExercise.hold1 || selectedExercise.hold2 },
-      exhale: { text: 'Exhale', color: 'from-green-400 to-green-600', duration: selectedExercise.exhale }
+      exhale: { text: 'Exhale', color: 'from-brand-emerald-600 to-brand-emerald-700', duration: selectedExercise.exhale }
     };
     
     const currentPhaseConfig = phaseConfig[breathingPhase];
 
     return (
       <div className="min-h-screen">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-4xl mx-auto px-6 py-12 lg:py-16">
           <button
             onClick={() => setSelectedExercise(null)}
-            className="mb-6 text-gray-600 hover:text-gray-900 transition-colors"
+            className="mb-6 text-brand-stone-600 dark:text-slate-400 hover:text-brand-stone-900 dark:hover:text-slate-100 transition-colors"
           >
             ← Back to Exercises
           </button>
 
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">{selectedExercise.name}</h1>
-            <p className="text-xl text-gray-600 mb-12">Follow the breathing pattern</p>
+            <h1 className="text-4xl font-serif font-normal text-brand-stone-900 dark:text-slate-100 mb-4">{selectedExercise.name}</h1>
+            <p className="text-xl text-brand-stone-600 dark:text-slate-400 mb-12">Follow the breathing pattern</p>
 
             {/* Breathing Circle */}
             <div className="relative w-80 h-80 mx-auto mb-12">
@@ -408,12 +408,12 @@ const Exercises = () => {
 
             {/* Progress */}
             <div className="mb-8">
-              <div className="text-lg text-gray-600 mb-2">
+              <div className="text-lg text-brand-stone-600 dark:text-slate-400 mb-2">
                 Cycle {breathingCount + 1} of {selectedExercise.cycles}
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 max-w-md mx-auto">
+              <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-3 max-w-md mx-auto">
                 <div 
-                  className="bg-gradient-to-r from-green-400 to-blue-400 h-3 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-brand-emerald-600 to-brand-gold-500 h-3 rounded-full transition-all duration-500"
                   style={{ width: `${((breathingCount + 1) / selectedExercise.cycles) * 100}%` }}
                 />
               </div>
@@ -425,13 +425,13 @@ const Exercises = () => {
                 onClick={() => {
                   setIsPlaying(!isPlaying);
                 }}
-                className="bg-gradient-to-r from-green-600 to-blue-600 text-white px-8 py-4 rounded-2xl font-bold text-xl hover:from-green-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="btn-sanctuary-primary text-xl px-8 py-4"
               >
                 {isPlaying ? 'Pause' : 'Resume'}
               </button>
               <button
                 onClick={() => setSelectedExercise(null)}
-                className="bg-gray-200 text-gray-700 px-8 py-4 rounded-2xl font-bold text-xl hover:bg-gray-300 transition-colors"
+                className="btn-sanctuary-secondary text-xl px-8 py-4"
               >
                 Stop
               </button>
@@ -445,23 +445,23 @@ const Exercises = () => {
   if (selectedExercise) {
     return (
       <div className="min-h-screen">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-6xl mx-auto px-6 py-12 lg:py-16">
           <div className="flex items-center justify-between mb-8">
             <button
               onClick={() => setSelectedExercise(null)}
-              className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+              className="flex items-center text-brand-stone-600 dark:text-slate-400 hover:text-brand-stone-900 dark:hover:text-slate-100 transition-colors"
             >
               ← Back to Exercises
             </button>
             <div className="flex items-center space-x-4">
               <span className={`px-4 py-2 rounded-full text-sm font-medium ${
-                selectedExercise.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
+                selectedExercise.difficulty === 'Beginner' ? 'bg-brand-emerald-50 text-brand-emerald-700' :
                 selectedExercise.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
                 'bg-red-100 text-red-700'
               }`}>
                 {selectedExercise.difficulty}
               </span>
-              <span className="text-gray-600 flex items-center">
+              <span className="text-brand-stone-600 dark:text-slate-400 flex items-center">
                 <Clock className="w-4 h-4 mr-1" />
                 {selectedExercise.duration}
               </span>
@@ -471,15 +471,15 @@ const Exercises = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Main Content */}
             <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl shadow-xl p-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-4">{selectedExercise.title}</h1>
-                <p className="text-xl text-gray-600 mb-8">{selectedExercise.description}</p>
+              <div className="soft-card p-8">
+                <h1 className="text-3xl font-serif font-normal text-brand-stone-900 dark:text-slate-100 mb-4">{selectedExercise.title}</h1>
+                <p className="text-xl text-brand-stone-600 dark:text-slate-400 mb-8">{selectedExercise.description}</p>
 
                 {/* Audio Player */}
-                <div className="bg-gradient-to-r from-amber-100 to-emerald-100 rounded-2xl p-8 mb-8">
+                <div className="bg-gradient-to-r from-brand-gold-50 to-brand-emerald-50 dark:from-brand-gold-950/20 dark:to-brand-emerald-950/20 rounded-[28px] p-8 mb-8">
                   <div className="flex items-center justify-center mb-8">
                     <div className="relative">
-                      <div className="w-32 h-32 bg-gradient-to-r from-amber-600 to-emerald-600 rounded-full flex items-center justify-center">
+                      <div className="w-32 h-32 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 rounded-full flex items-center justify-center">
                         {isPlaying ? (
                           <Pause className="w-16 h-16 text-white" />
                         ) : (
@@ -494,13 +494,13 @@ const Exercises = () => {
 
                   {/* Progress Bar */}
                   <div className="mb-6">
-                    <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                    <div className="flex items-center justify-between text-sm text-brand-stone-600 dark:text-slate-400 mb-2">
                       <span>{formatTime(currentTime)}</span>
                       <span>{formatTime(duration)}</span>
                     </div>
-                    <div className="w-full bg-white/50 rounded-full h-2">
+                    <div className="w-full bg-white/40 rounded-full h-2">
                       <div 
-                        className="bg-gradient-to-r from-amber-600 to-emerald-600 h-2 rounded-full transition-all duration-300"
+                        className="bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${(currentTime / duration) * 100}%` }}
                       />
                     </div>
@@ -510,34 +510,34 @@ const Exercises = () => {
                   <div className="flex items-center justify-center space-x-4">
                     <button
                       onClick={handleReset}
-                      className="p-3 bg-white/50 rounded-full hover:bg-white/70 transition-colors"
+                      className="p-3 bg-white/40 rounded-full hover:bg-white/70 transition-colors"
                     >
-                      <RotateCcw className="w-5 h-5 text-gray-700" />
+                      <RotateCcw className="w-5 h-5 text-brand-stone-700 dark:text-slate-300" />
                     </button>
                     <button
                       onClick={togglePlayPause}
-                      className="p-4 bg-white rounded-full hover:bg-white/90 transition-colors shadow-lg"
+                      className="p-4 bg-white/80 rounded-full hover:bg-white/90 transition-colors shadow-lg"
                     >
                       {isPlaying ? (
-                        <Pause className="w-6 h-6 text-gray-700" />
+                        <Pause className="w-6 h-6 text-brand-stone-700 dark:text-slate-300" />
                       ) : (
-                        <Play className="w-6 h-6 text-gray-700 ml-1" />
+                        <Play className="w-6 h-6 text-brand-stone-700 dark:text-slate-300 ml-1" />
                       )}
                     </button>
                     <button
                       onClick={() => setIsMuted(!isMuted)}
-                      className="p-3 bg-white/50 rounded-full hover:bg-white/70 transition-colors"
+                      className="p-3 bg-white/40 rounded-full hover:bg-white/70 transition-colors"
                     >
                       {isMuted ? (
-                        <VolumeX className="w-5 h-5 text-gray-700" />
+                        <VolumeX className="w-5 h-5 text-brand-stone-700 dark:text-slate-300" />
                       ) : (
-                        <Volume2 className="w-5 h-5 text-gray-700" />
+                        <Volume2 className="w-5 h-5 text-brand-stone-700 dark:text-slate-300" />
                       )}
                     </button>
                   </div>
                   {hasAudio && (
                     <div className="flex items-center justify-center gap-3 mt-4">
-                      <Volume2 className="w-4 h-4 text-gray-500" />
+                      <Volume2 className="w-4 h-4 text-brand-stone-500 dark:text-slate-500" />
                       <input
                         type="range"
                         min="0"
@@ -553,12 +553,12 @@ const Exercises = () => {
 
                 {/* Benefits */}
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-4">Benefits</h3>
+                  <h3 className="text-xl font-serif font-semibold text-brand-stone-900 dark:text-slate-100 mb-4">Benefits</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {selectedExercise.benefits?.map((benefit, index) => (
                       <div key={index} className="flex items-center space-x-2">
                         <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                        <span className="text-gray-700">{benefit}</span>
+                        <span className="text-brand-stone-700 dark:text-slate-300">{benefit}</span>
                       </div>
                     ))}
                   </div>
@@ -569,12 +569,12 @@ const Exercises = () => {
             {/* Sidebar */}
             <div className="lg:col-span-1">
               {/* Instructions */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
+              <div className="soft-card p-6 mb-6">
+                <h3 className="text-lg font-serif font-normal text-brand-stone-900 dark:text-slate-100 mb-4 flex items-center">
                   <Headphones className="w-5 h-5 mr-2 text-amber-600" />
                   Instructions
                 </h3>
-                <ul className="space-y-3 text-gray-600">
+                <ul className="space-y-3 text-brand-stone-600 dark:text-slate-400">
                   <li className="flex items-start">
                     <span className="text-amber-600 mr-2">•</span>
                     Find a quiet, comfortable space
@@ -599,12 +599,12 @@ const Exercises = () => {
               </div>
 
               {/* Transcript Toggle */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+              <div className="soft-card p-6 mb-6">
                 <button
                   onClick={() => setShowTranscript(!showTranscript)}
                   className="w-full flex items-center justify-between text-left"
                 >
-                  <h3 className="text-lg font-bold text-gray-900 flex items-center">
+                  <h3 className="text-lg font-serif font-normal text-brand-stone-900 dark:text-slate-100 flex items-center">
                     <Eye className="w-5 h-5 mr-2 text-amber-600" />
                     Transcript
                   </h3>
@@ -614,8 +614,8 @@ const Exercises = () => {
                 </button>
                 
                 {showTranscript && (
-                  <div className="mt-4 p-4 bg-gray-50 rounded-lg max-h-64 overflow-y-auto">
-                    <p className="text-gray-700 text-sm leading-relaxed">
+                  <div className="mt-4 p-4 bg-brand-stone-50 dark:bg-slate-800/50 rounded-lg max-h-64 overflow-y-auto">
+                    <p className="text-brand-stone-700 dark:text-slate-300 text-sm leading-relaxed">
                       {selectedExercise.transcript}
                     </p>
                   </div>
@@ -623,8 +623,8 @@ const Exercises = () => {
               </div>
 
               {/* Related Exercises */}
-              <div className="bg-white rounded-2xl shadow-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Related Exercises</h3>
+              <div className="soft-card p-6">
+                <h3 className="text-lg font-serif font-normal text-brand-stone-900 dark:text-slate-100 mb-4">Related Exercises</h3>
                 <div className="space-y-3">
                   {exerciseCategories
                     .flatMap(cat => cat.exercises)
@@ -634,10 +634,10 @@ const Exercises = () => {
                       <button
                         key={exercise.id}
                         onClick={() => handleExerciseSelect(exercise)}
-                        className="w-full text-left p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="w-full text-left p-3 bg-brand-stone-50 dark:bg-slate-800/50 rounded-lg hover:bg-brand-stone-100 dark:bg-slate-800/60 transition-colors"
                       >
-                        <div className="font-medium text-gray-900">{exercise.title}</div>
-                        <div className="text-sm text-gray-600">{exercise.duration}</div>
+                        <div className="font-medium text-brand-stone-900 dark:text-slate-100">{exercise.title}</div>
+                        <div className="text-sm text-brand-stone-600 dark:text-slate-400">{exercise.duration}</div>
                       </button>
                     ))}
                 </div>
@@ -652,13 +652,13 @@ const Exercises = () => {
   return (
     <div className="min-h-screen">
       {/* Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-emerald-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-6 pt-12 lg:pt-20">
+        <div className="soft-card bg-gradient-to-br from-brand-emerald-600 to-brand-emerald-700 text-white p-8 lg:p-12">
           <div className="text-center">
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Guided Healing Exercises
             </h1>
-            <p className="text-xl text-amber-100 max-w-3xl mx-auto">
+            <p className="text-xl text-brand-emerald-50/90 max-w-3xl mx-auto">
               Transformative practices to strengthen your Self, heal your inner child, and harmonize your parts
             </p>
           </div>
@@ -666,11 +666,11 @@ const Exercises = () => {
       </div>
 
       {/* Quick Start */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <button
             onClick={() => handleExerciseSelect(exerciseCategories[0].exercises[0])}
-            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group"
+            className="soft-card p-6 hover:shadow-xl transition-all duration-300 group"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -678,27 +678,27 @@ const Exercises = () => {
               </div>
               <Play className="w-5 h-5 text-amber-600" />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Quick Self-Connection</h3>
-            <p className="text-sm text-gray-600">5-minute practice to center yourself</p>
+            <h3 className="font-bold text-brand-stone-900 dark:text-slate-100 mb-2">Quick Self-Connection</h3>
+            <p className="text-sm text-brand-stone-600 dark:text-slate-400">5-minute practice to center yourself</p>
           </button>
 
           <button
             onClick={() => startBreathingExercise(breathingExercises[0])}
-            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group"
+            className="soft-card p-6 hover:shadow-xl transition-all duration-300 group"
           >
             <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Wind className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-brand-emerald-50 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Wind className="w-6 h-6 text-brand-emerald-600" />
               </div>
-              <Play className="w-5 h-5 text-green-600" />
+              <Play className="w-5 h-5 text-brand-emerald-600" />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Box Breathing</h3>
-            <p className="text-sm text-gray-600">Calm your nervous system instantly</p>
+            <h3 className="font-bold text-brand-stone-900 dark:text-slate-100 mb-2">Box Breathing</h3>
+            <p className="text-sm text-brand-stone-600 dark:text-slate-400">Calm your nervous system instantly</p>
           </button>
 
           <button
             onClick={() => handleExerciseSelect(exerciseCategories[1].exercises[0])}
-            className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 group"
+            className="soft-card p-6 hover:shadow-xl transition-all duration-300 group"
           >
             <div className="flex items-center justify-between mb-4">
               <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -706,14 +706,14 @@ const Exercises = () => {
               </div>
               <Play className="w-5 h-5 text-emerald-600" />
             </div>
-            <h3 className="font-bold text-gray-900 mb-2">Inner Child Check-in</h3>
-            <p className="text-sm text-gray-600">Quick connection with your inner child</p>
+            <h3 className="font-bold text-brand-stone-900 dark:text-slate-100 mb-2">Inner Child Check-in</h3>
+            <p className="text-sm text-brand-stone-600 dark:text-slate-400">Quick connection with your inner child</p>
           </button>
         </div>
       </div>
 
       {/* Exercise Categories */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         {exerciseCategories.map((category) => {
           const Icon = category.icon;
           return (
@@ -723,8 +723,8 @@ const Exercises = () => {
                   <Icon className="w-8 h-8 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">{category.title}</h2>
-                  <p className="text-gray-600">{category.description}</p>
+                  <h2 className="text-2xl font-serif font-normal text-brand-stone-900 dark:text-slate-100">{category.title}</h2>
+                  <p className="text-brand-stone-600 dark:text-slate-400">{category.description}</p>
                 </div>
               </div>
 
@@ -733,35 +733,35 @@ const Exercises = () => {
                   <div
                     key={exercise.id}
                     onClick={() => handleExerciseSelect(exercise)}
-                    className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                    className="soft-card p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group"
                   >
                     <div className="flex items-center justify-between mb-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        exercise.difficulty === 'Beginner' ? 'bg-green-100 text-green-700' :
+                        exercise.difficulty === 'Beginner' ? 'bg-brand-emerald-50 text-brand-emerald-700' :
                         exercise.difficulty === 'Intermediate' ? 'bg-yellow-100 text-yellow-700' :
                         'bg-red-100 text-red-700'
                       }`}>
                         {exercise.difficulty}
                       </span>
-                      <div className="flex items-center text-gray-500">
+                      <div className="flex items-center text-brand-stone-500 dark:text-slate-500">
                         <Clock className="w-4 h-4 mr-1" />
                         <span className="text-sm">{exercise.duration}</span>
                       </div>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">
+                    <h3 className="text-xl font-serif font-semibold text-brand-stone-900 dark:text-slate-100 mb-2 group-hover:text-brand-gold-700 dark:group-hover:text-brand-gold-500 transition-colors">
                       {exercise.title}
                     </h3>
                     
-                    <p className="text-gray-600 mb-4 leading-relaxed">
+                    <p className="text-brand-stone-600 dark:text-slate-400 mb-4 leading-relaxed">
                       {exercise.description}
                     </p>
 
                     <div className="flex items-center justify-between">
                       <span className={`text-xs font-medium px-2 py-1 rounded ${
                         exercise.type === 'meditation' ? 'bg-amber-100 text-amber-700' :
-                        exercise.type === 'practice' ? 'bg-blue-100 text-blue-700' :
-                        exercise.type === 'technique' ? 'bg-green-100 text-green-700' :
+                        exercise.type === 'practice' ? 'bg-brand-stone-100 text-brand-stone-600' :
+                        exercise.type === 'technique' ? 'bg-brand-emerald-50 text-brand-emerald-700' :
                         'bg-orange-100 text-orange-700'
                       }`}>
                         {exercise.type}
@@ -780,17 +780,17 @@ const Exercises = () => {
       </div>
 
       {/* Tips Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-gradient-to-r from-amber-100 to-emerald-100 rounded-3xl p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Tips for Effective Practice</h2>
+      <div className="max-w-7xl mx-auto px-6 py-12">
+        <div className="soft-card bg-gradient-to-r from-brand-gold-50 to-brand-emerald-50 dark:from-brand-gold-950/20 dark:to-brand-emerald-950/20 p-8">
+          <h2 className="text-2xl font-serif font-normal text-brand-stone-900 dark:text-slate-100 mb-6">Tips for Effective Practice</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
                 <Target className="w-4 h-4 text-amber-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Be Consistent</h3>
-                <p className="text-gray-600 text-sm">Regular practice builds deeper connections and lasting change</p>
+                <h3 className="font-semibold text-brand-stone-900 dark:text-slate-100 mb-1">Be Consistent</h3>
+                <p className="text-brand-stone-600 dark:text-slate-400 text-sm">Regular practice builds deeper connections and lasting change</p>
               </div>
             </div>
             
@@ -799,28 +799,28 @@ const Exercises = () => {
                 <Heart className="w-4 h-4 text-emerald-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Be Gentle</h3>
-                <p className="text-gray-600 text-sm">Approach yourself with compassion, especially when working with wounded parts</p>
+                <h3 className="font-semibold text-brand-stone-900 dark:text-slate-100 mb-1">Be Gentle</h3>
+                <p className="text-brand-stone-600 dark:text-slate-400 text-sm">Approach yourself with compassion, especially when working with wounded parts</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                <Shield className="w-4 h-4 text-blue-600" />
+                <Shield className="w-4 h-4 text-brand-stone-500" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Create Safety</h3>
-                <p className="text-gray-600 text-sm">Ensure you feel safe and supported before deep inner work</p>
+                <h3 className="font-semibold text-brand-stone-900 dark:text-slate-100 mb-1">Create Safety</h3>
+                <p className="text-brand-stone-600 dark:text-slate-400 text-sm">Ensure you feel safe and supported before deep inner work</p>
               </div>
             </div>
             
             <div className="flex items-start space-x-3">
               <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
-                <Hand className="w-4 h-4 text-green-600" />
+                <Hand className="w-4 h-4 text-brand-emerald-600" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">Stay Present</h3>
-                <p className="text-gray-600 text-sm">Return to the present moment if you feel overwhelmed</p>
+                <h3 className="font-semibold text-brand-stone-900 dark:text-slate-100 mb-1">Stay Present</h3>
+                <p className="text-brand-stone-600 dark:text-slate-400 text-sm">Return to the present moment if you feel overwhelmed</p>
               </div>
             </div>
           </div>

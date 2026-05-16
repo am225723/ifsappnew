@@ -9,11 +9,11 @@ import { supabaseHelpers } from '../lib/supabase';
 import { clientAuth } from '../lib/supabasePersonalization';
 
 const moodOptions = [
-  { value: 5, label: 'Great', icon: Sun, color: 'text-yellow-500', bg: 'bg-yellow-100', darkBg: 'bg-yellow-900/30', ring: 'ring-yellow-400' },
-  { value: 4, label: 'Good', icon: Smile, color: 'text-green-500', bg: 'bg-green-100', darkBg: 'bg-green-900/30', ring: 'ring-green-400' },
-  { value: 3, label: 'Okay', icon: CloudSun, color: 'text-blue-500', bg: 'bg-blue-100', darkBg: 'bg-blue-900/30', ring: 'ring-blue-400' },
-  { value: 2, label: 'Low', icon: Cloud, color: 'text-gray-500', bg: 'bg-gray-100', darkBg: 'bg-gray-700/30', ring: 'ring-gray-400' },
-  { value: 1, label: 'Struggling', icon: CloudRain, color: 'text-stone-500', bg: 'bg-stone-100', darkBg: 'bg-indigo-900/30', ring: 'ring-indigo-400' },
+  { value: 5, label: 'Great', icon: Sun, color: 'text-brand-gold-700', bg: 'bg-brand-gold-50', darkBg: 'bg-brand-gold-950/30', ring: 'ring-brand-gold-500' },
+  { value: 4, label: 'Good', icon: Smile, color: 'text-brand-emerald-700', bg: 'bg-brand-emerald-50', darkBg: 'bg-brand-emerald-950/30', ring: 'ring-brand-emerald-600' },
+  { value: 3, label: 'Okay', icon: CloudSun, color: 'text-brand-stone-600', bg: 'bg-brand-stone-100', darkBg: 'bg-slate-800/60', ring: 'ring-brand-stone-400' },
+  { value: 2, label: 'Low', icon: Cloud, color: 'text-brand-stone-500', bg: 'bg-brand-stone-100', darkBg: 'bg-slate-800/60', ring: 'ring-brand-stone-400' },
+  { value: 1, label: 'Struggling', icon: CloudRain, color: 'text-red-500', bg: 'bg-red-50', darkBg: 'bg-red-950/30', ring: 'ring-red-400' },
 ];
 
 const emotionTags = ['Calm', 'Anxious', 'Hopeful', 'Sad', 'Angry', 'Grateful', 'Peaceful', 'Overwhelmed'];
@@ -21,9 +21,9 @@ const emotionTags = ['Calm', 'Anxious', 'Hopeful', 'Sad', 'Angry', 'Grateful', '
 const moodColors = {
   5: '#EAB308',
   4: '#22C55E',
-  3: '#3B82F6',
+  3: '#A8A29E',
   2: '#6B7280',
-  1: '#6366F1',
+  1: '#EF4444',
 };
 
 const partsConnections = [
@@ -51,6 +51,7 @@ export default function MoodTracker() {
   const [viewRange, setViewRange] = useState('7');
   const [selectedBarDay, setSelectedBarDay] = useState(null);
   const [savedToday, setSavedToday] = useState(false);
+  const [weekStart] = useState(() => new Date(Date.now() - 7 * 86400000));
 
   useEffect(() => {
     const loadEntries = async () => {
@@ -121,7 +122,7 @@ export default function MoodTracker() {
 
   const recentEntries = entries.filter(e => {
     const d = new Date(e.date);
-    return d >= new Date(Date.now() - 7 * 86400000);
+    return d >= weekStart;
   });
   const avgMood = recentEntries.length > 0 ? (recentEntries.reduce((s, e) => s + e.mood, 0) / recentEntries.length).toFixed(1) : '--';
   const avgEnergy = recentEntries.length > 0 ? (recentEntries.reduce((s, e) => s + e.energy, 0) / recentEntries.length).toFixed(1) : '--';
@@ -145,25 +146,25 @@ export default function MoodTracker() {
   const getMoodOption = (val) => moodOptions.find(m => m.value === val);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
+    <div className="max-w-4xl mx-auto px-6 py-12 lg:py-16 space-y-8">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-orange-500 flex items-center justify-center">
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-gold-500 to-brand-emerald-600 flex items-center justify-center shadow-lg shadow-brand-gold-500/20">
           <Heart className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Mood Tracker</h1>
-          <p className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Check in with yourself daily</p>
+          <h1 className="text-3xl lg:text-4xl font-serif font-normal text-brand-stone-900 dark:text-slate-100">Mood Tracker</h1>
+          <p className="text-sm text-brand-stone-600 dark:text-slate-400">Check in with yourself daily</p>
         </div>
       </div>
 
-      <div className={`rounded-2xl p-5 border shadow-sm ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
-        <h2 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+      <div className="soft-card">
+        <h2 className="text-xl font-serif font-normal mb-5 flex items-center gap-2 text-brand-stone-900 dark:text-slate-100">
           <Calendar className="w-5 h-5" /> Daily Check-in
-          {savedToday && <span className="text-xs font-normal px-2 py-0.5 rounded-full bg-green-100 text-green-700">Saved today</span>}
+          {savedToday && <span className="text-xs font-sans font-medium px-2 py-0.5 rounded-full bg-brand-emerald-50 text-brand-emerald-700 dark:bg-brand-emerald-950/40 dark:text-brand-emerald-100">Saved today</span>}
         </h2>
 
         <div className="mb-5">
-          <p className={`text-sm font-medium mb-3 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>How are you feeling?</p>
+          <p className="text-sm font-medium mb-3 text-brand-stone-600 dark:text-slate-300">How are you feeling?</p>
           <div className="flex justify-between gap-2">
             {moodOptions.map((opt) => {
               const Icon = opt.icon;
@@ -175,13 +176,13 @@ export default function MoodTracker() {
                   className={`flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all flex-1 ${
                     selected
                       ? `${isDark ? opt.darkBg : opt.bg} ring-2 ${opt.ring} scale-105`
-                      : isDark ? 'hover:bg-slate-700/50' : 'hover:bg-gray-50'
+                      : isDark ? 'hover:bg-slate-800/50' : 'hover:bg-brand-stone-50'
                   }`}
                 >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selected ? (isDark ? opt.darkBg : opt.bg) : isDark ? 'bg-slate-700' : 'bg-gray-100'}`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center ${selected ? (isDark ? opt.darkBg : opt.bg) : isDark ? 'bg-slate-800' : 'bg-brand-stone-100'}`}>
                     <Icon className={`w-5 h-5 ${opt.color}`} />
                   </div>
-                  <span className={`text-xs font-medium ${isDark ? 'text-slate-300' : 'text-gray-600'}`}>{opt.label}</span>
+                  <span className="text-xs font-medium text-brand-stone-600 dark:text-slate-300">{opt.label}</span>
                 </button>
               );
             })}
@@ -190,10 +191,10 @@ export default function MoodTracker() {
 
         <div className="mb-5">
           <div className="flex items-center justify-between mb-2">
-            <p className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Energy Level</p>
+            <p className="text-sm font-medium text-brand-stone-600 dark:text-slate-300">Energy Level</p>
             <div className="flex items-center gap-1.5">
-              {energy <= 3 ? <BatteryLow className="w-4 h-4 text-red-500" /> : energy <= 6 ? <BatteryMedium className="w-4 h-4 text-yellow-500" /> : <BatteryFull className="w-4 h-4 text-green-500" />}
-              <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{energy}/10</span>
+              {energy <= 3 ? <BatteryLow className="w-4 h-4 text-red-500" /> : energy <= 6 ? <BatteryMedium className="w-4 h-4 text-brand-gold-600" /> : <BatteryFull className="w-4 h-4 text-brand-emerald-600" />}
+              <span className="text-sm font-bold text-brand-stone-900 dark:text-slate-100">{energy}/10</span>
             </div>
           </div>
           <input
@@ -204,17 +205,17 @@ export default function MoodTracker() {
             onChange={(e) => setEnergy(parseInt(e.target.value))}
             className="w-full h-2 rounded-lg appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, #EF4444 0%, #F59E0B 40%, #22C55E 70%, #10B981 100%)`,
+              background: `linear-gradient(to right, #EF4444 0%, #D97706 40%, #059669 100%)`,
             }}
           />
           <div className="flex justify-between mt-1">
-            <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>Low</span>
-            <span className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-400'}`}>High</span>
+            <span className="text-xs text-brand-stone-400 dark:text-slate-500">Low</span>
+            <span className="text-xs text-brand-stone-400 dark:text-slate-500">High</span>
           </div>
         </div>
 
         <div className="mb-5">
-          <p className={`text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>What emotions are present?</p>
+          <p className="text-sm font-medium mb-2 text-brand-stone-600 dark:text-slate-300">What emotions are present?</p>
           <div className="flex flex-wrap gap-2">
             {emotionTags.map((emotion) => {
               const selected = selectedEmotions.includes(emotion);
@@ -225,7 +226,7 @@ export default function MoodTracker() {
                   className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                     selected
                       ? isDark ? 'bg-amber-900/40 text-amber-300 border-amber-600' : 'bg-amber-100 text-amber-700 border-amber-300'
-                      : isDark ? 'bg-slate-700/50 text-slate-400 border-slate-600 hover:bg-slate-700' : 'bg-gray-50 text-gray-500 border-gray-200 hover:bg-gray-100'
+                      : isDark ? 'bg-slate-800/50 text-slate-400 border-slate-700 hover:bg-slate-800' : 'bg-brand-stone-50 text-brand-stone-500 border-brand-stone-200 hover:bg-brand-stone-100'
                   }`}
                 >
                   {emotion}
@@ -236,14 +237,14 @@ export default function MoodTracker() {
         </div>
 
         <div className="mb-5">
-          <p className={`text-sm font-medium mb-2 ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Notes (optional)</p>
+          <p className="text-sm font-medium mb-2 text-brand-stone-600 dark:text-slate-300">Notes (optional)</p>
           <textarea
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="What's on your mind today..."
             rows={3}
             className={`w-full rounded-xl px-4 py-3 text-sm border resize-none focus:outline-none focus:ring-2 focus:ring-amber-400 ${
-              isDark ? 'bg-slate-700/50 border-slate-600 text-white placeholder-slate-500' : 'bg-gray-50 border-gray-200 text-gray-900 placeholder-gray-400'
+              isDark ? 'bg-slate-900/50 border-slate-700 text-slate-100 placeholder-slate-500' : 'bg-brand-stone-50 border-brand-stone-200 text-brand-stone-900 placeholder-brand-stone-400'
             }`}
           />
         </div>
@@ -253,8 +254,8 @@ export default function MoodTracker() {
           disabled={mood === null}
           className={`w-full py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${
             mood !== null
-              ? 'bg-gradient-to-r from-amber-500 to-emerald-500 text-white hover:from-amber-600 hover:to-emerald-600 shadow-lg'
-              : isDark ? 'bg-slate-700 text-slate-500 cursor-not-allowed' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              ? 'btn-sanctuary-primary'
+              : isDark ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-brand-stone-200 text-brand-stone-400 cursor-not-allowed'
           }`}
         >
           <Save className="w-4 h-4" />
@@ -262,9 +263,9 @@ export default function MoodTracker() {
         </button>
       </div>
 
-      <div className={`rounded-2xl p-5 border shadow-sm ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
+      <div className="soft-card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className={`text-lg font-semibold flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+          <h2 className="text-xl font-serif font-normal flex items-center gap-2 text-brand-stone-900 dark:text-slate-100">
             <BarChart3 className="w-5 h-5" /> Mood Trends
           </h2>
           <div className="flex gap-1">
@@ -336,18 +337,18 @@ export default function MoodTracker() {
         </div>
       </div>
 
-      <div className={`rounded-2xl p-5 border shadow-sm ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
-        <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+      <div className="soft-card">
+        <h2 className="text-xl font-serif font-normal mb-3 flex items-center gap-2 text-brand-stone-900 dark:text-slate-100">
           <TrendingUp className="w-5 h-5" /> Weekly Summary
         </h2>
         <div className="grid grid-cols-2 gap-3 mb-3">
-          <div className={`rounded-xl p-3 ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Avg Mood</p>
-            <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{avgMood}<span className="text-xs font-normal">/5</span></p>
+          <div className="rounded-xl p-3 bg-brand-stone-50 dark:bg-slate-800/50">
+            <p className="text-xs text-brand-stone-500 dark:text-slate-400">Avg Mood</p>
+            <p className="text-xl font-bold text-brand-stone-900 dark:text-slate-100">{avgMood}<span className="text-xs font-normal">/5</span></p>
           </div>
-          <div className={`rounded-xl p-3 ${isDark ? 'bg-slate-700/50' : 'bg-gray-50'}`}>
-            <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Avg Energy</p>
-            <p className={`text-xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{avgEnergy}<span className="text-xs font-normal">/10</span></p>
+          <div className="rounded-xl p-3 bg-brand-stone-50 dark:bg-slate-800/50">
+            <p className="text-xs text-brand-stone-500 dark:text-slate-400">Avg Energy</p>
+            <p className="text-xl font-bold text-brand-stone-900 dark:text-slate-100">{avgEnergy}<span className="text-xs font-normal">/10</span></p>
           </div>
         </div>
         {topEmotions.length > 0 && (
@@ -369,8 +370,8 @@ export default function MoodTracker() {
       </div>
 
       {entries.length > 0 && (
-        <div className={`rounded-2xl p-5 border shadow-sm ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
-          <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <div className="soft-card">
+          <h2 className="text-xl font-serif font-normal mb-3 flex items-center gap-2 text-brand-stone-900 dark:text-slate-100">
             <Calendar className="w-5 h-5" /> History
           </h2>
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
@@ -378,7 +379,7 @@ export default function MoodTracker() {
               const opt = getMoodOption(entry.mood);
               const Icon = opt?.icon || Meh;
               return (
-                <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-slate-700/30 hover:bg-slate-700/50' : 'bg-gray-50 hover:bg-gray-100'} transition-all`}>
+                <div key={entry.id} className={`flex items-center gap-3 p-3 rounded-xl ${isDark ? 'bg-slate-800/40 hover:bg-slate-800/70' : 'bg-brand-stone-50 hover:bg-brand-stone-100'} transition-all`}>
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center ${isDark ? opt?.darkBg : opt?.bg}`}>
                     <Icon className={`w-4 h-4 ${opt?.color}`} />
                   </div>
@@ -407,8 +408,8 @@ export default function MoodTracker() {
       )}
 
       {mood !== null && currentMoodConnection && (
-        <div className={`rounded-2xl p-5 border shadow-sm ${isDark ? 'bg-slate-800/60 border-slate-700' : 'bg-white/90 border-gray-200'}`}>
-          <h2 className={`text-lg font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+        <div className="soft-card">
+          <h2 className="text-xl font-serif font-normal mb-3 flex items-center gap-2 text-brand-stone-900 dark:text-slate-100">
             <Heart className="w-5 h-5 text-emerald-500" /> Parts Connection
           </h2>
           <div className={`p-4 rounded-xl flex items-start gap-3 ${isDark ? 'bg-amber-900/20 border border-amber-800' : 'bg-amber-50 border border-amber-200'}`}>

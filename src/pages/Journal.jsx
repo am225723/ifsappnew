@@ -30,7 +30,7 @@ import {
   ChevronDown
 } from 'lucide-react';
 import { useData } from '../contexts/DataContext';
-import { supabase, supabaseHelpers } from '../lib/supabase';
+import { supabase } from '../lib/supabase';
 import { clientAuth } from '../lib/supabasePersonalization';
 import { useTheme } from '../contexts/ThemeContext';
 import { useParts } from '../contexts/PartsContext';
@@ -157,9 +157,9 @@ const PARTS_PROMPTS = {
 };
 
 const PART_TYPE_CONFIG = {
-  manager: { color: 'blue', textClass: 'text-blue-500', bgClass: 'bg-blue-100', icon: Shield, label: 'Manager' },
-  firefighter: { color: 'red', textClass: 'text-red-500', bgClass: 'bg-red-100', icon: Sparkles, label: 'Firefighter' },
-  exile: { color: 'purple', textClass: 'text-purple-500', bgClass: 'bg-purple-100', icon: Heart, label: 'Exile' },
+  manager: { color: 'emerald', textClass: 'text-brand-emerald-700 dark:text-brand-emerald-100', bgClass: 'bg-brand-emerald-50 dark:bg-brand-emerald-950/40', icon: Shield, label: 'Manager' },
+  firefighter: { color: 'amber', textClass: 'text-brand-gold-700 dark:text-brand-gold-500', bgClass: 'bg-brand-gold-50 dark:bg-brand-gold-950/40', icon: Sparkles, label: 'Firefighter' },
+  exile: { color: 'stone', textClass: 'text-brand-stone-600 dark:text-slate-200', bgClass: 'bg-brand-stone-100 dark:bg-slate-800/60', icon: Heart, label: 'Exile' },
   self: { color: 'emerald', textClass: 'text-emerald-500', bgClass: 'bg-emerald-100', icon: Star, label: 'Self' }
 };
 
@@ -169,7 +169,6 @@ const Journal = () => {
   const [isWriting, setIsWriting] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMood, setSelectedMood] = useState('all');
-  const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [entryContent, setEntryContent] = useState('');
   const [entryTitle, setEntryTitle] = useState('');
   const [entryTags, setEntryTags] = useState([]);
@@ -289,9 +288,9 @@ const Journal = () => {
   ];
 
   const moods = [
-    { value: 'amazing', emoji: '😄', color: 'from-green-400 to-green-600', label: 'Amazing' },
-    { value: 'good', emoji: '😊', color: 'from-blue-400 to-blue-600', label: 'Good' },
-    { value: 'neutral', emoji: '😐', color: 'from-gray-400 to-gray-600', label: 'Neutral' },
+    { value: 'amazing', emoji: '😄', color: 'from-brand-emerald-500 to-brand-emerald-700', label: 'Amazing' },
+    { value: 'good', emoji: '😊', color: 'from-brand-gold-500 to-brand-emerald-600', label: 'Good' },
+    { value: 'neutral', emoji: '😐', color: 'from-brand-stone-400 to-brand-stone-600', label: 'Neutral' },
     { value: 'challenged', emoji: '😔', color: 'from-yellow-400 to-yellow-600', label: 'Challenged' },
     { value: 'difficult', emoji: '😢', color: 'from-red-400 to-red-600', label: 'Difficult' }
   ];
@@ -413,7 +412,6 @@ const Journal = () => {
     setEntryContent('');
     setEntryTags([]);
     setEntryMood('neutral');
-    setSelectedPrompt(null);
     setSelectedPart(null);
     setIsWriting(false);
   };
@@ -437,7 +435,6 @@ const Journal = () => {
   };
 
   const handlePromptSelect = (prompt) => {
-    setSelectedPrompt(prompt);
     setEntryContent(prompt);
     setShowPrompts(false);
     textAreaRef.current?.focus();
@@ -456,26 +453,22 @@ const Journal = () => {
     return moods.find(m => m.value === mood)?.emoji || '😐';
   };
 
-  const getMoodColor = (mood) => {
-    return moods.find(m => m.value === mood)?.color || 'from-gray-400 to-gray-600';
-  };
-
   const getWordCount = () => {
     return entryContent.split(' ').filter(word => word.length > 0).length;
   };
 
-  const cardBg = theme.isDark ? 'bg-slate-800' : 'bg-white';
-  const textPrimary = theme.isDark ? 'text-white' : 'text-gray-900';
-  const textSecondary = theme.isDark ? 'text-slate-300' : 'text-gray-600';
-  const textTertiary = theme.isDark ? 'text-slate-400' : 'text-gray-500';
-  const inputBg = theme.isDark ? 'bg-slate-700 text-white border-slate-600' : 'border-gray-300';
-  const inputText = theme.isDark ? 'text-white placeholder-slate-400' : 'text-gray-900 placeholder-gray-400';
-  const textareaText = theme.isDark ? 'text-slate-200 placeholder-slate-400' : 'text-gray-700 placeholder-gray-400';
-  const subtleBg = theme.isDark ? 'bg-slate-700' : 'bg-gray-100';
-  const subtleBgHover = theme.isDark ? 'hover:bg-slate-600' : 'hover:bg-gray-200';
-  const modalBg = theme.isDark ? 'bg-slate-800' : 'bg-white';
-  const promptBg = theme.isDark ? 'bg-slate-700' : 'bg-gray-50';
-  const promptHover = theme.isDark ? 'hover:bg-slate-600' : 'hover:bg-amber-50';
+  const cardBg = 'soft-card';
+  const textPrimary = 'text-brand-stone-900 dark:text-slate-100';
+  const textSecondary = 'text-brand-stone-600 dark:text-slate-400';
+  const textTertiary = 'text-brand-stone-400 dark:text-slate-500';
+  const inputBg = 'bg-white/70 dark:bg-slate-900/50 text-brand-stone-900 dark:text-slate-100 border-brand-stone-200 dark:border-slate-700';
+  const inputText = 'text-brand-stone-900 dark:text-slate-100 placeholder-brand-stone-400 dark:placeholder-slate-500';
+  const textareaText = 'text-brand-stone-700 dark:text-slate-200 placeholder-brand-stone-400 dark:placeholder-slate-500';
+  const subtleBg = 'bg-brand-stone-100 dark:bg-slate-800/60';
+  const subtleBgHover = 'hover:bg-brand-stone-200/60 dark:hover:bg-slate-800';
+  const modalBg = 'bg-brand-sanctuary dark:bg-brand-cardDark';
+  const promptBg = 'bg-brand-stone-50 dark:bg-slate-800/60';
+  const promptHover = 'hover:bg-brand-gold-50 dark:hover:bg-brand-gold-950/20';
 
   const availableParts = parts.filter(p => p.type !== 'self' || p.name !== 'Self');
   const uniquePartNames = [...new Set(entries.filter(e => e.partName).map(e => e.partName))];
@@ -504,7 +497,7 @@ const Journal = () => {
               )}
               <button
                 onClick={handleSaveEntry}
-                className="bg-gradient-to-r from-amber-600 to-emerald-600 text-white px-6 py-2 rounded-xl font-semibold hover:from-amber-700 hover:to-emerald-700 transition-all duration-300"
+                className="btn-sanctuary-primary px-5 py-2.5"
               >
                 Save Entry
               </button>
@@ -512,21 +505,18 @@ const Journal = () => {
           </div>
 
           {journalMode === 'parts' && (
-            <div className={`${cardBg} rounded-2xl shadow-lg p-5 mb-6`}>
+            <div className={`${cardBg} p-5 mb-6`}>
               <div className="flex items-center gap-2 mb-3">
-                <Users className="w-5 h-5 text-purple-500" />
+                <Users className="w-5 h-5 text-brand-gold-700 dark:text-brand-gold-500" />
                 <h3 className={`font-bold ${textPrimary}`}>Writing to a Part</h3>
               </div>
               {selectedPart ? (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                      selectedPart.type === 'manager' ? 'bg-blue-100 text-blue-600' :
-                      selectedPart.type === 'firefighter' ? 'bg-red-100 text-red-600' :
-                      selectedPart.type === 'exile' ? 'bg-purple-100 text-purple-600' :
-                      'bg-emerald-100 text-emerald-600'
+                      PART_TYPE_CONFIG[selectedPart.type]?.bgClass || 'bg-brand-emerald-50 dark:bg-brand-emerald-950/40'
                     }`}>
-                      {(() => { const Ico = PART_TYPE_CONFIG[selectedPart.type]?.icon || Brain; return <Ico className="w-5 h-5" />; })()}
+                      {(() => { const cfg = PART_TYPE_CONFIG[selectedPart.type] || PART_TYPE_CONFIG.self; const Ico = cfg.icon || Brain; return <Ico className={`w-5 h-5 ${cfg.textClass}`} />; })()}
                     </div>
                     <div>
                       <p className={`font-semibold ${textPrimary}`}>{selectedPart.name}</p>
@@ -535,7 +525,7 @@ const Journal = () => {
                   </div>
                   <button
                     onClick={() => setShowPartSelector(true)}
-                    className={`text-sm ${theme.isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'}`}
+                    className="text-sm text-brand-gold-700 dark:text-brand-gold-500 hover:underline"
                   >
                     Change Part
                   </button>
@@ -543,7 +533,7 @@ const Journal = () => {
               ) : (
                 <button
                   onClick={() => setShowPartSelector(true)}
-                  className={`w-full p-4 rounded-xl border-2 border-dashed ${theme.isDark ? 'border-slate-600 hover:border-purple-500' : 'border-gray-300 hover:border-purple-400'} transition-colors flex items-center justify-center gap-2 ${textSecondary}`}
+                  className={`w-full p-4 rounded-xl border-2 border-dashed border-brand-stone-200 dark:border-slate-700 hover:border-brand-gold-500/50 transition-colors flex items-center justify-center gap-2 ${textSecondary}`}
                 >
                   <Plus className="w-5 h-5" />
                   Select a Part to Write To
@@ -562,7 +552,7 @@ const Journal = () => {
                           if (!entryTitle) setEntryTitle(`Letter to ${selectedPart.name}`);
                           textAreaRef.current?.focus();
                         }}
-                        className={`text-xs px-3 py-1.5 rounded-full ${theme.isDark ? 'bg-slate-700 text-slate-300 hover:bg-purple-900/40 hover:text-purple-300' : 'bg-purple-50 text-purple-700 hover:bg-purple-100'} transition-colors`}
+                        className="text-xs px-3 py-1.5 rounded-full bg-brand-gold-50 text-brand-gold-700 dark:bg-brand-gold-950/30 dark:text-brand-gold-500 hover:bg-brand-gold-100 transition-colors"
                       >
                         {prompt.length > 50 ? prompt.substring(0, 50) + '...' : prompt}
                       </button>
@@ -573,7 +563,7 @@ const Journal = () => {
             </div>
           )}
 
-          <div className={`${cardBg} rounded-3xl shadow-xl p-8`}>
+          <div className={`${cardBg} p-8`}>
             <div className="mb-6">
               <input
                 type="text"
@@ -764,7 +754,7 @@ const Journal = () => {
                           <button
                             key={defaultPart.type}
                             onClick={() => { setSelectedPart(defaultPart); setShowPartSelector(false); }}
-                            className={`flex items-center gap-2 px-4 py-3 rounded-xl border ${theme.isDark ? 'border-slate-600 hover:border-purple-500 bg-slate-700' : 'border-gray-200 hover:border-purple-400 bg-gray-50'} transition-colors`}
+                          className="flex items-center gap-2 px-4 py-3 rounded-xl border border-brand-stone-200 dark:border-slate-700 bg-brand-stone-50 dark:bg-slate-800/60 hover:border-brand-gold-500/50 transition-colors"
                           >
                             <Ico className={`w-4 h-4 ${cfg.textClass}`} />
                             <span className={`text-sm font-medium ${textPrimary}`}>{defaultPart.name}</span>
@@ -784,17 +774,14 @@ const Journal = () => {
                           onClick={() => { setSelectedPart(part); setShowPartSelector(false); }}
                           className={`w-full flex items-center gap-3 p-4 rounded-xl border ${
                             selectedPart?.id === part.id
-                              ? theme.isDark ? 'border-purple-500 bg-purple-900/20' : 'border-purple-400 bg-purple-50'
-                              : theme.isDark ? 'border-slate-600 hover:border-slate-500 bg-slate-700/50' : 'border-gray-200 hover:border-gray-300 bg-gray-50'
+                              ? 'border-brand-gold-500 bg-brand-gold-50 dark:bg-brand-gold-950/20'
+                              : 'border-brand-stone-200 dark:border-slate-700 hover:border-brand-stone-400 dark:hover:border-slate-600 bg-brand-stone-50 dark:bg-slate-800/60'
                           } transition-all`}
                         >
                           <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                            part.type === 'manager' ? 'bg-blue-100 text-blue-600' :
-                            part.type === 'firefighter' ? 'bg-red-100 text-red-600' :
-                            part.type === 'exile' ? 'bg-purple-100 text-purple-600' :
-                            'bg-emerald-100 text-emerald-600'
+                            cfg.bgClass
                           }`}>
-                            <Ico className="w-5 h-5" />
+                            <Ico className={`w-5 h-5 ${cfg.textClass}`} />
                           </div>
                           <div className="text-left flex-1">
                             <p className={`font-semibold ${textPrimary}`}>{part.name}</p>
@@ -834,19 +821,16 @@ const Journal = () => {
             </div>
           </div>
 
-          <div className={`${cardBg} rounded-3xl shadow-xl p-8`}>
+          <div className={`${cardBg} p-8`}>
             <div className="mb-6">
               <h1 className={`text-3xl font-bold ${textPrimary} mb-4`}>{selectedEntry.title}</h1>
               
               {selectedEntry.partName && (
                 <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4 ${
-                  selectedEntry.partType === 'manager' ? 'bg-blue-100 text-blue-700' :
-                  selectedEntry.partType === 'firefighter' ? 'bg-red-100 text-red-700' :
-                  selectedEntry.partType === 'exile' ? 'bg-purple-100 text-purple-700' :
-                  'bg-emerald-100 text-emerald-700'
+                  PART_TYPE_CONFIG[selectedEntry.partType]?.bgClass || 'bg-brand-emerald-50 dark:bg-brand-emerald-950/40'
                 }`}>
-                  {(() => { const Ico = PART_TYPE_CONFIG[selectedEntry.partType]?.icon || Brain; return <Ico className="w-3.5 h-3.5" />; })()}
-                  <span className="text-sm font-medium">{selectedEntry.partName}</span>
+                  {(() => { const cfg = PART_TYPE_CONFIG[selectedEntry.partType] || PART_TYPE_CONFIG.self; const Ico = cfg.icon || Brain; return <Ico className={`w-3.5 h-3.5 ${cfg.textClass}`} />; })()}
+                  <span className={`text-sm font-medium ${PART_TYPE_CONFIG[selectedEntry.partType]?.textClass || PART_TYPE_CONFIG.self.textClass}`}>{selectedEntry.partName}</span>
                 </div>
               )}
 
@@ -896,19 +880,19 @@ const Journal = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="bg-gradient-to-r from-amber-600 to-emerald-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div className="max-w-7xl mx-auto px-6 pt-12 lg:pt-20">
+        <div className="soft-card bg-gradient-to-br from-brand-emerald-600 to-brand-emerald-700 text-white p-8 lg:p-12">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              <h1 className="text-4xl md:text-5xl font-serif font-normal mb-4">
                 Healing Journal
               </h1>
-              <p className="text-xl text-amber-100">
+              <p className="text-xl text-brand-emerald-50/90">
                 A sacred space to document your inner journey and insights
               </p>
             </div>
             <div className="hidden md:block">
-              <div className="w-32 h-32 bg-white/20 backdrop-blur rounded-2xl flex items-center justify-center">
+              <div className="w-32 h-32 bg-white/15 backdrop-blur rounded-[28px] flex items-center justify-center">
                 <BookOpen className="w-16 h-16 text-white" />
               </div>
             </div>
@@ -916,9 +900,9 @@ const Journal = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className={`${cardBg} rounded-2xl shadow-lg p-6`}>
+          <div className={`${cardBg} p-6`}>
             <div className="flex items-center justify-between mb-2">
               <span className={textSecondary}>Total Entries</span>
               <BookOpen className="w-5 h-5 text-amber-600" />
@@ -929,37 +913,37 @@ const Journal = () => {
           <div className={`${cardBg} rounded-2xl shadow-lg p-6`}>
             <div className="flex items-center justify-between mb-2">
               <span className={textSecondary}>Total Words</span>
-              <PenTool className="w-5 h-5 text-blue-600" />
+              <PenTool className="w-5 h-5 text-brand-stone-500" />
             </div>
             <div className={`text-2xl font-bold ${textPrimary}`}>
               {entries.reduce((total, entry) => total + (entry.wordCount || 0), 0).toLocaleString()}
             </div>
           </div>
 
-          <div className={`${cardBg} rounded-2xl shadow-lg p-6`}>
+          <div className={`${cardBg} p-6`}>
             <div className="flex items-center justify-between mb-2">
               <span className={textSecondary}>Current Streak</span>
-              <TrendingUp className="w-5 h-5 text-green-600" />
+              <TrendingUp className="w-5 h-5 text-brand-emerald-600" />
             </div>
             <div className={`text-2xl font-bold ${textPrimary}`}>{calculateStreak(entries)} days</div>
           </div>
 
-          <div className={`${cardBg} rounded-2xl shadow-lg p-6`}>
+          <div className={`${cardBg} p-6`}>
             <div className="flex items-center justify-between mb-2">
               <span className={textSecondary}>Avg Mood</span>
-              <Star className="w-5 h-5 text-yellow-600" />
+              <Star className="w-5 h-5 text-brand-gold-600" />
             </div>
             <div className={`text-2xl font-bold ${textPrimary}`}>{calculateAverageMood(entries)}</div>
           </div>
         </div>
 
-        <div className={`${cardBg} rounded-2xl shadow-lg p-2 mb-6`}>
+        <div className={`${cardBg} p-2 mb-6`}>
           <div className="flex">
             <button
               onClick={() => { setJournalMode('regular'); setFilterPart('all'); }}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                 journalMode === 'regular'
-                  ? 'bg-gradient-to-r from-amber-500 to-emerald-500 text-white shadow-md'
+                  ? 'bg-white dark:bg-brand-cardDark text-brand-gold-700 dark:text-brand-gold-500 shadow-sm'
                   : `${textSecondary} ${subtleBgHover}`
               }`}
             >
@@ -970,7 +954,7 @@ const Journal = () => {
               onClick={() => setJournalMode('parts')}
               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
                 journalMode === 'parts'
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-md'
+                  ? 'bg-white dark:bg-brand-cardDark text-brand-gold-700 dark:text-brand-gold-500 shadow-sm'
                   : `${textSecondary} ${subtleBgHover}`
               }`}
             >
@@ -980,7 +964,7 @@ const Journal = () => {
           </div>
         </div>
 
-        <div className={`${cardBg} rounded-2xl shadow-lg p-6 mb-8`}>
+        <div className={`${cardBg} p-6 mb-8`}>
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="flex items-center space-x-4 flex-wrap gap-y-2">
               <div className="relative flex-1 min-w-[200px]">
@@ -1011,7 +995,7 @@ const Journal = () => {
                 <select
                   value={filterPart}
                   onChange={(e) => setFilterPart(e.target.value)}
-                  className={`px-4 py-2 border ${inputBg} rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent`}
+                  className={`px-4 py-2 border ${inputBg} rounded-lg focus:ring-2 focus:ring-brand-gold-600 focus:border-transparent`}
                 >
                   <option value="all">All Parts</option>
                   {uniquePartNames.map(name => (
@@ -1023,7 +1007,7 @@ const Journal = () => {
 
             <button
               onClick={() => setIsWriting(true)}
-              className={`${journalMode === 'parts' ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700' : 'bg-gradient-to-r from-amber-600 to-emerald-600 hover:from-amber-700 hover:to-emerald-700'} text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 shadow-lg hover:shadow-xl flex items-center`}
+              className="btn-sanctuary-primary"
             >
               <Plus className="w-5 h-5 mr-2" />
               {journalMode === 'parts' ? 'Write to Part' : 'New Entry'}
@@ -1035,7 +1019,7 @@ const Journal = () => {
           <h2 className={`text-2xl font-bold ${textPrimary} mb-6`}>Recent Entries</h2>
           
           {filteredEntries.length === 0 ? (
-            <div className={`${cardBg} rounded-2xl shadow-lg p-12 text-center`}>
+            <div className={`${cardBg} p-12 text-center`}>
               <div className={`w-20 h-20 ${subtleBg} rounded-full flex items-center justify-center mx-auto mb-4`}>
                 <BookOpen className={`w-10 h-10 ${textTertiary}`} />
               </div>
@@ -1050,7 +1034,7 @@ const Journal = () => {
               </p>
               <button
                 onClick={() => setIsWriting(true)}
-                className="bg-gradient-to-r from-amber-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:from-amber-700 hover:to-emerald-700 transition-all duration-300"
+                className="btn-sanctuary-primary mx-auto"
               >
                 Write First Entry
               </button>
@@ -1061,17 +1045,14 @@ const Journal = () => {
                 <div
                   key={entry.id}
                   onClick={() => setSelectedEntry(entry)}
-                  className={`${cardBg} rounded-2xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition-all duration-300 group`}
+                  className="soft-card-interactive cursor-pointer group"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{getMoodEmoji(entry.mood)}</span>
                       {entry.partName && (
                         <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full ${
-                          entry.partType === 'manager' ? 'bg-blue-100 text-blue-700' :
-                          entry.partType === 'firefighter' ? 'bg-red-100 text-red-700' :
-                          entry.partType === 'exile' ? 'bg-purple-100 text-purple-700' :
-                          'bg-emerald-100 text-emerald-700'
+                          PART_TYPE_CONFIG[entry.partType]?.bgClass || 'bg-brand-emerald-50 dark:bg-brand-emerald-950/40'
                         }`}>
                           {entry.partName}
                         </span>
