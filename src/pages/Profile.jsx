@@ -64,13 +64,13 @@ function getIdentifiedParts(answers) {
 
 const typeLabels = { manager: 'Manager', firefighter: 'Firefighter', exile: 'Exile' };
 const typeColors = {
-  manager: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-100 text-blue-700', fill: 'bg-blue-500' },
+  manager: { bg: 'bg-brand-emerald-50', border: 'border-brand-emerald-100', text: 'text-brand-emerald-700', badge: 'bg-brand-emerald-50 text-brand-emerald-700', fill: 'bg-brand-stone-500' },
   firefighter: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', badge: 'bg-amber-100 text-amber-700', fill: 'bg-amber-500' },
   exile: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-100 text-rose-700', fill: 'bg-rose-500' }
 };
 
 const woundColors = {
-  abandonment: { bg: 'bg-blue-100', border: 'border-blue-400', text: 'text-blue-700', fill: 'bg-blue-500' },
+  abandonment: { bg: 'bg-brand-emerald-50', border: 'border-brand-emerald-400', text: 'text-brand-emerald-700', fill: 'bg-brand-stone-500' },
   shame: { bg: 'bg-amber-100', border: 'border-amber-400', text: 'text-amber-700', fill: 'bg-amber-500' },
   neglect: { bg: 'bg-amber-100', border: 'border-amber-400', text: 'text-amber-700', fill: 'bg-amber-500' },
   betrayal: { bg: 'bg-red-100', border: 'border-red-400', text: 'text-red-700', fill: 'bg-red-500' },
@@ -101,11 +101,6 @@ const Profile = ({ client }) => {
   const [streakData, setStreakData] = useState({});
   const [timeline, setTimeline] = useState([]);
 
-  useEffect(() => {
-    loadAssessmentData();
-    loadSupabaseData();
-  }, [client]);
-
   const loadAssessmentData = async () => {
     if (!client?.id) {
       setLoading(false);
@@ -121,6 +116,17 @@ const Profile = ({ client }) => {
         .like('module_id', 'assessment_%');
 
       const interactiveData = interactiveResult?.data || [];
+      setAllAssessments(
+        interactiveData
+          .filter(d => d.module_id === 'assessment_wounds' && d.data)
+          .map(d => ({
+            id: d.id,
+            primary_wound: d.data.primary,
+            secondary_wound: d.data.secondary,
+            assessment_date: d.data.completedAt || d.updated_at,
+            created_at: d.updated_at
+          }))
+      );
 
       // Wound results: ONLY from the client's actual assessment tab answers
       const woundsEntry = interactiveData.find(d => d.module_id === 'assessment_wounds');
@@ -185,6 +191,13 @@ const Profile = ({ client }) => {
       setTimeline(miles || []);
     } catch (err) { console.error('Error loading profile data:', err); }
   };
+
+  useEffect(() => {
+    // Existing profile hydration intentionally kicks off both async loaders when the active client changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadAssessmentData();
+    loadSupabaseData();
+  }, [client]);
 
   const handlePrint = () => {
     window.print();
@@ -317,8 +330,8 @@ const Profile = ({ client }) => {
         </button>
 
         <div ref={printRef} className="print-area">
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
-            <div className="bg-gradient-to-r from-amber-600 to-amber-600 px-4 sm:px-8 py-6 text-white">
+          <div className="soft-card overflow-hidden mb-8">
+            <div className="bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 px-4 sm:px-8 py-6 text-white">
               <div className="flex items-center gap-4">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-7 h-7 sm:w-8 sm:h-8" />
@@ -332,21 +345,21 @@ const Profile = ({ client }) => {
 
             <div className="p-4 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                <h2 className="text-xl font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2">
                   <Heart className="w-5 h-5 text-emerald-500" />
                   Wound Assessment Results
                 </h2>
                 <div className="no-print flex gap-2">
                   <button
                     onClick={handlePrint}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-gray-700 text-sm"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-brand-stone-100 dark:bg-slate-800/60 hover:bg-brand-stone-200 dark:hover:bg-slate-700 rounded-lg transition-colors text-brand-stone-700 dark:text-slate-300 text-sm"
                   >
                     <Printer className="w-4 h-4" />
                     <span>Print</span>
                   </button>
                   <button
                     onClick={handleDownloadPDF}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition-colors text-sm"
+                    className="btn-sanctuary-primary px-3 py-2 text-sm"
                   >
                     <Download className="w-4 h-4" />
                     <span>Save PDF</span>
@@ -355,10 +368,10 @@ const Profile = ({ client }) => {
               </div>
 
               {!assessment ? (
-                <div className="text-center py-12 bg-gray-50 rounded-xl">
-                  <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-700 mb-2">No Assessment Found</h3>
-                  <p className="text-gray-500 mb-4">You haven't completed the wound assessment yet.</p>
+                <div className="text-center py-12 bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl">
+                  <AlertCircle className="w-12 h-12 text-brand-stone-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-brand-stone-700 dark:text-slate-300 mb-2">No Assessment Found</h3>
+                  <p className="text-brand-stone-500 dark:text-slate-500 mb-4">You haven't completed the wound assessment yet.</p>
                   <button
                     onClick={() => navigate('/assessments')}
                     className="no-print px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
@@ -368,42 +381,42 @@ const Profile = ({ client }) => {
                 </div>
               ) : (
                 <>
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-brand-stone-500 dark:text-slate-500 mb-6">
                     <Calendar className="w-4 h-4" />
                     Assessment Date: {formatDate(assessment.assessment_date || assessment.created_at)}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    <div className={`p-6 rounded-xl ${woundColors[assessment.primary_wound]?.bg || 'bg-gray-100'} border-2 ${woundColors[assessment.primary_wound]?.border || 'border-gray-300'}`}>
+                    <div className={`p-6 rounded-xl ${woundColors[assessment.primary_wound]?.bg || 'bg-brand-stone-100 dark:bg-slate-800/60'} border-2 ${woundColors[assessment.primary_wound]?.border || 'border-brand-stone-200'}`}>
                       <div className="flex items-center gap-2 mb-2">
                         <Shield className="w-5 h-5" />
                         <span className="text-sm font-medium uppercase tracking-wide">Primary Wound</span>
                       </div>
-                      <h3 className={`text-2xl font-bold capitalize mb-2 ${woundColors[assessment.primary_wound]?.text || 'text-gray-700'}`}>
+                      <h3 className={`text-2xl font-bold capitalize mb-2 ${woundColors[assessment.primary_wound]?.text || 'text-brand-stone-700 dark:text-slate-300'}`}>
                         {assessment.primary_wound}
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-brand-stone-600 dark:text-slate-400">
                         {woundDescriptions[assessment.primary_wound]}
                       </p>
                     </div>
 
                     {assessment.secondary_wound && (
-                      <div className={`p-6 rounded-xl ${woundColors[assessment.secondary_wound]?.bg || 'bg-gray-100'} border-2 ${woundColors[assessment.secondary_wound]?.border || 'border-gray-300'}`}>
+                      <div className={`p-6 rounded-xl ${woundColors[assessment.secondary_wound]?.bg || 'bg-brand-stone-100 dark:bg-slate-800/60'} border-2 ${woundColors[assessment.secondary_wound]?.border || 'border-brand-stone-200'}`}>
                         <div className="flex items-center gap-2 mb-2">
                           <Shield className="w-5 h-5" />
                           <span className="text-sm font-medium uppercase tracking-wide">Secondary Wound</span>
                         </div>
-                        <h3 className={`text-2xl font-bold capitalize mb-2 ${woundColors[assessment.secondary_wound]?.text || 'text-gray-700'}`}>
+                        <h3 className={`text-2xl font-bold capitalize mb-2 ${woundColors[assessment.secondary_wound]?.text || 'text-brand-stone-700 dark:text-slate-300'}`}>
                           {assessment.secondary_wound}
                         </h3>
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-brand-stone-600 dark:text-slate-400">
                           {woundDescriptions[assessment.secondary_wound]}
                         </p>
                       </div>
                     )}
                   </div>
 
-                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <h3 className="text-lg font-semibold text-brand-stone-900 dark:text-slate-100 mb-4 flex items-center gap-2">
                     <TrendingUp className="w-5 h-5 text-stone-500" />
                     Detailed Scores
                   </h3>
@@ -417,15 +430,15 @@ const Profile = ({ client }) => {
                       const colors = woundColors[wound];
 
                       return (
-                        <div key={wound} className="bg-gray-50 rounded-lg p-4">
+                        <div key={wound} className="bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl p-4">
                           <div className="flex justify-between items-center mb-2">
                             <span className={`font-medium capitalize ${colors.text}`}>{wound}</span>
                             <div className="flex items-center gap-3">
                               <span className={`text-sm font-medium ${intensity.color}`}>{intensity.level}</span>
-                              <span className="font-bold text-gray-700">{score}/25</span>
+                              <span className="font-bold text-brand-stone-700 dark:text-slate-300">{score}/25</span>
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-3">
                             <div
                               className={`h-3 rounded-full transition-all duration-500 ${colors.fill}`}
                               style={{ width: `${percentage}%` }}
@@ -438,7 +451,7 @@ const Profile = ({ client }) => {
 
                   <div className="bg-gradient-to-r from-amber-50 to-stone-50 rounded-xl p-6 border border-amber-200">
                     <h3 className="font-semibold text-amber-800 mb-3">What This Means For Your Healing</h3>
-                    <p className="text-gray-700 leading-relaxed">
+                    <p className="text-brand-stone-700 dark:text-slate-300 leading-relaxed">
                       Your assessment reveals that <strong className="text-amber-700">{assessment.primary_wound}</strong> is 
                       your primary area for healing work. This doesn't define you—it simply shows where your inner child 
                       may need the most attention and compassion. Your curriculum has been personalized to address these 
@@ -453,14 +466,14 @@ const Profile = ({ client }) => {
           {partsAssessment && (() => {
             const identifiedParts = getIdentifiedParts(partsAssessment.answers);
             return (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div className="soft-card overflow-hidden mb-8">
               <div className="p-4 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6">
-                  <Shield className="w-5 h-5 text-purple-500" />
+                <h2 className="text-xl font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2 mb-6">
+                  <Shield className="w-5 h-5 text-brand-gold-700" />
                   Protective Parts Assessment
                 </h2>
                 {partsAssessment.completedAt && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-brand-stone-500 dark:text-slate-500 mb-6">
                     <Calendar className="w-4 h-4" />
                     Completed: {formatDate(partsAssessment.completedAt)}
                   </div>
@@ -468,12 +481,12 @@ const Profile = ({ client }) => {
                 {partsAssessment.ranked && partsAssessment.ranked.length > 0 && (
                   <div className="space-y-4 mb-6">
                     {partsAssessment.ranked.map(([category, data], idx) => {
-                      const colors = idx === 0 ? 'bg-purple-500' : idx === 1 ? 'bg-indigo-500' : 'bg-blue-500';
+                      const colors = idx === 0 ? 'bg-brand-gold-600' : idx === 1 ? 'bg-brand-emerald-600' : 'bg-brand-stone-500';
                       const percentage = data.maxScale ? (data.average / data.maxScale) * 100 : (data.total / (data.count * 5)) * 100;
                       return (
-                        <div key={category} className="bg-gray-50 rounded-lg p-4">
+                        <div key={category} className="bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium capitalize text-gray-700">{category}</span>
+                            <span className="font-medium capitalize text-brand-stone-700 dark:text-slate-300">{category}</span>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                                 percentage >= 66 ? 'bg-red-100 text-red-700' :
@@ -482,12 +495,12 @@ const Profile = ({ client }) => {
                               }`}>
                                 {percentage >= 66 ? 'High' : percentage >= 33 ? 'Moderate' : 'Low'}
                               </span>
-                              <span className="font-bold text-gray-700">
+                              <span className="font-bold text-brand-stone-700 dark:text-slate-300">
                                 {data.average?.toFixed(1) || (data.total / data.count).toFixed(1)}/{data.maxScale || 5}
                               </span>
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-3">
                             <div className={`h-3 rounded-full transition-all duration-500 ${colors}`} style={{ width: `${Math.min(percentage, 100)}%` }} />
                           </div>
                         </div>
@@ -498,8 +511,8 @@ const Profile = ({ client }) => {
 
                 {identifiedParts.length > 0 && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                      <Brain className="w-5 h-5 text-purple-500" />
+                    <h3 className="text-lg font-semibold text-brand-stone-900 dark:text-slate-100 mb-4 flex items-center gap-2">
+                      <Brain className="w-5 h-5 text-brand-gold-700" />
                       Your Identified Parts
                     </h3>
                     {['manager', 'firefighter', 'exile'].map(type => {
@@ -524,8 +537,8 @@ const Profile = ({ client }) => {
                                     {part.intensityLabel}
                                   </span>
                                 </div>
-                                <p className="text-sm text-gray-600 mb-1">{part.description}</p>
-                                <p className="text-xs text-gray-500 italic">{part.role}</p>
+                                <p className="text-sm text-brand-stone-600 dark:text-slate-400 mb-1">{part.description}</p>
+                                <p className="text-xs text-brand-stone-500 dark:text-slate-500 italic">{part.role}</p>
                               </div>
                             ))}
                           </div>
@@ -536,9 +549,9 @@ const Profile = ({ client }) => {
                 )}
 
                 {identifiedParts.length === 0 && (
-                  <div className="bg-purple-50 rounded-xl p-6 border border-purple-200 text-center">
-                    <Shield className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                    <p className="text-sm text-purple-700">No strongly active protective parts identified from this assessment</p>
+                  <div className="bg-brand-stone-100 rounded-xl p-6 border border-brand-stone-200 text-center">
+                    <Shield className="w-8 h-8 text-brand-stone-400 mx-auto mb-2" />
+                    <p className="text-sm text-brand-stone-600">No strongly active protective parts identified from this assessment</p>
                   </div>
                 )}
               </div>
@@ -547,14 +560,14 @@ const Profile = ({ client }) => {
           })()}
 
           {selfEnergyAssessment && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div className="soft-card overflow-hidden mb-8">
               <div className="p-4 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6">
+                <h2 className="text-xl font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2 mb-6">
                   <Sparkles className="w-5 h-5 text-emerald-500" />
                   Self-Energy Assessment
                 </h2>
                 {selfEnergyAssessment.completedAt && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-brand-stone-500 dark:text-slate-500 mb-6">
                     <Calendar className="w-4 h-4" />
                     Completed: {formatDate(selfEnergyAssessment.completedAt)}
                   </div>
@@ -562,22 +575,22 @@ const Profile = ({ client }) => {
                 {selfEnergyAssessment.ranked && selfEnergyAssessment.ranked.length > 0 && (
                   <div className="space-y-4 mb-6">
                     {selfEnergyAssessment.ranked.map(([category, data], idx) => {
-                      const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-green-500', 'bg-lime-500', 'bg-sky-500', 'bg-indigo-500', 'bg-violet-500'];
+                      const colors = ['bg-emerald-500', 'bg-teal-500', 'bg-cyan-500', 'bg-green-500', 'bg-lime-500', 'bg-sky-500', 'bg-brand-emerald-600', 'bg-brand-gold-600'];
                       const percentage = data.maxScale ? (data.average / data.maxScale) * 100 : (data.total / (data.count * 5)) * 100;
                       const level = percentage >= 80 ? 'Strong' : percentage >= 60 ? 'Developing' : 'Growing Edge';
                       const levelStyle = percentage >= 80 ? 'bg-emerald-100 text-emerald-700' : percentage >= 60 ? 'bg-yellow-100 text-yellow-700' : 'bg-orange-100 text-orange-700';
                       return (
-                        <div key={category} className="bg-gray-50 rounded-lg p-4">
+                        <div key={category} className="bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium capitalize text-gray-700">{category}</span>
+                            <span className="font-medium capitalize text-brand-stone-700 dark:text-slate-300">{category}</span>
                             <div className="flex items-center gap-3">
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${levelStyle}`}>{level}</span>
-                              <span className="font-bold text-gray-700">
+                              <span className="font-bold text-brand-stone-700 dark:text-slate-300">
                                 {data.average?.toFixed(1) || (data.total / data.count).toFixed(1)}/{data.maxScale || 5}
                               </span>
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-3">
                             <div className={`h-3 rounded-full transition-all duration-500 ${colors[idx % colors.length]}`} style={{ width: `${Math.min(percentage, 100)}%` }} />
                           </div>
                         </div>
@@ -587,7 +600,7 @@ const Profile = ({ client }) => {
                 )}
                 <div className="bg-emerald-50 rounded-xl p-6 border border-emerald-200">
                   <h3 className="font-semibold text-emerald-800 mb-3">Understanding Self-Energy</h3>
-                  <p className="text-gray-700 leading-relaxed">
+                  <p className="text-brand-stone-700 dark:text-slate-300 leading-relaxed">
                     Self-energy reflects your connection to qualities like curiosity, compassion, and calm. Higher scores indicate stronger access to your core Self, which is the foundation for healing in IFS therapy.
                   </p>
                 </div>
@@ -596,14 +609,14 @@ const Profile = ({ client }) => {
           )}
 
           {attachmentAssessment && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div className="soft-card overflow-hidden mb-8">
               <div className="p-4 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6">
-                  <Users className="w-5 h-5 text-violet-500" />
+                <h2 className="text-xl font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2 mb-6">
+                  <Users className="w-5 h-5 text-brand-gold-700" />
                   Attachment Style Assessment
                 </h2>
                 {attachmentAssessment.completedAt && (
-                  <div className="flex items-center gap-2 text-sm text-gray-500 mb-6">
+                  <div className="flex items-center gap-2 text-sm text-brand-stone-500 dark:text-slate-500 mb-6">
                     <Calendar className="w-4 h-4" />
                     Completed: {formatDate(attachmentAssessment.completedAt)}
                   </div>
@@ -611,24 +624,24 @@ const Profile = ({ client }) => {
                 {attachmentAssessment.ranked && attachmentAssessment.ranked.length > 0 && (
                   <div className="space-y-4 mb-6">
                     {attachmentAssessment.ranked.map(([category, data], idx) => {
-                      const colors = ['bg-violet-500', 'bg-indigo-500', 'bg-purple-500', 'bg-fuchsia-500'];
+                      const colors = ['bg-brand-gold-600', 'bg-brand-emerald-600', 'bg-brand-stone-600', 'bg-brand-stone-500'];
                       const styleLabels = { secure: 'Secure', anxious: 'Anxious-Preoccupied', avoidant: 'Dismissive-Avoidant', disorganized: 'Fearful-Avoidant' };
                       const percentage = data.maxScale ? (data.average / data.maxScale) * 100 : (data.total / (data.count * 5)) * 100;
                       const level = percentage >= 80 ? 'Dominant' : percentage >= 60 ? 'Present' : 'Minimal';
-                      const levelStyle = percentage >= 80 ? 'bg-violet-100 text-violet-700' : percentage >= 60 ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700';
+                      const levelStyle = percentage >= 80 ? 'bg-brand-gold-50 text-brand-gold-700' : percentage >= 60 ? 'bg-brand-emerald-50 text-brand-emerald-700' : 'bg-brand-stone-100 text-brand-stone-600';
                       return (
-                        <div key={category} className="bg-gray-50 rounded-lg p-4">
+                        <div key={category} className="bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-gray-700">{styleLabels[category] || category}</span>
+                            <span className="font-medium text-brand-stone-700 dark:text-slate-300">{styleLabels[category] || category}</span>
                             <div className="flex items-center gap-3">
-                              {idx === 0 && <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-violet-100 text-violet-700">Primary Style</span>}
+                              {idx === 0 && <span className="text-xs px-2 py-0.5 rounded-full font-semibold bg-brand-gold-50 text-brand-gold-700">Primary Style</span>}
                               <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${levelStyle}`}>{level}</span>
-                              <span className="font-bold text-gray-700">
+                              <span className="font-bold text-brand-stone-700 dark:text-slate-300">
                                 {data.average?.toFixed(1) || (data.total / data.count).toFixed(1)}/5
                               </span>
                             </div>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-3">
+                          <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-3">
                             <div className={`h-3 rounded-full transition-all duration-500 ${colors[idx % colors.length]}`} style={{ width: `${Math.min(percentage, 100)}%` }} />
                           </div>
                         </div>
@@ -636,9 +649,9 @@ const Profile = ({ client }) => {
                     })}
                   </div>
                 )}
-                <div className="bg-violet-50 rounded-xl p-6 border border-violet-200">
-                  <h3 className="font-semibold text-violet-800 mb-3">Understanding Attachment Styles</h3>
-                  <p className="text-gray-700 leading-relaxed">
+                <div className="bg-brand-gold-50 rounded-xl p-6 border border-brand-gold-100">
+                  <h3 className="font-semibold text-brand-gold-700 mb-3">Understanding Attachment Styles</h3>
+                  <p className="text-brand-stone-700 dark:text-slate-300 leading-relaxed">
                     Your attachment style reflects patterns learned in early relationships. Most people have a blend of styles. Understanding your dominant pattern helps you recognize relationship cycles and develop more secure connections through IFS work in Module 9.
                   </p>
                 </div>
@@ -647,19 +660,19 @@ const Profile = ({ client }) => {
           )}
 
           {customAssessments.length > 0 && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+            <div className="soft-card overflow-hidden mb-8">
               <div className="p-4 sm:p-8">
-                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2 mb-6">
+                <h2 className="text-xl font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2 mb-6">
                   <ClipboardList className="w-5 h-5 text-amber-500" />
                   Custom Assessment Results
                 </h2>
                 <div className="space-y-6">
                   {customAssessments.map((ca, caIdx) => (
-                    <div key={ca.moduleId || caIdx} className="border border-gray-200 rounded-xl p-5">
+                    <div key={ca.moduleId || caIdx} className="border border-brand-stone-200 dark:border-slate-800 rounded-xl p-5">
                       <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">{ca.assessmentTitle || 'Custom Assessment'}</h3>
+                        <h3 className="text-lg font-semibold text-brand-stone-900 dark:text-slate-100">{ca.assessmentTitle || 'Custom Assessment'}</h3>
                         {(ca.completedAt || ca.updatedAt) && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-brand-stone-500 dark:text-slate-500">
                             {formatDate(ca.completedAt || ca.updatedAt)}
                           </span>
                         )}
@@ -667,24 +680,24 @@ const Profile = ({ client }) => {
                       {ca.ranked && ca.ranked.length > 0 && (
                         <div className="space-y-3">
                           {ca.ranked.map(([category, data], idx) => {
-                            const barColors = ['bg-amber-500', 'bg-emerald-500', 'bg-blue-500', 'bg-purple-500', 'bg-rose-500'];
+                            const barColors = ['bg-amber-500', 'bg-emerald-500', 'bg-brand-stone-500', 'bg-brand-stone-600', 'bg-rose-500'];
                             const percentage = data.percentage || ((data.average / (data.maxScale || 5)) * 100);
                             return (
-                              <div key={category} className="bg-gray-50 rounded-lg p-3">
+                              <div key={category} className="bg-brand-stone-50 dark:bg-slate-800/50 rounded-xl p-3">
                                 <div className="flex justify-between items-center mb-1.5">
-                                  <span className="text-sm font-medium capitalize text-gray-700">{category}</span>
+                                  <span className="text-sm font-medium capitalize text-brand-stone-700 dark:text-slate-300">{category}</span>
                                   <div className="flex items-center gap-2">
                                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                                       data.label === 'High' ? 'bg-red-100 text-red-700' :
                                       data.label === 'Moderate' ? 'bg-yellow-100 text-yellow-700' :
                                       'bg-green-100 text-green-700'
                                     }`}>{data.label || 'N/A'}</span>
-                                    <span className="text-sm font-semibold text-gray-600">
+                                    <span className="text-sm font-semibold text-brand-stone-600 dark:text-slate-400">
                                       {data.average?.toFixed(1)}/{data.maxScale || 5}
                                     </span>
                                   </div>
                                 </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                <div className="w-full bg-brand-stone-200 dark:bg-slate-700 rounded-full h-2.5">
                                   <div className={`h-2.5 rounded-full transition-all duration-500 ${barColors[idx % barColors.length]}`} style={{ width: `${Math.min(percentage, 100)}%` }} />
                                 </div>
                               </div>
@@ -700,12 +713,12 @@ const Profile = ({ client }) => {
           )}
 
           {allAssessments.length > 1 && (
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden no-print">
+            <div className="soft-card overflow-hidden no-print">
               <button
                 onClick={() => setShowHistory(!showHistory)}
-                className="w-full px-8 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                className="w-full px-8 py-4 flex items-center justify-between hover:bg-brand-stone-50 dark:hover:bg-slate-800/60 transition-colors"
               >
-                <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                <h2 className="text-lg font-semibold text-brand-stone-900 dark:text-slate-100 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-stone-500" />
                   Assessment History ({allAssessments.length} total)
                 </h2>
@@ -718,11 +731,11 @@ const Profile = ({ client }) => {
                     {allAssessments.map((a, index) => (
                       <div 
                         key={a.id || index}
-                        className={`p-4 rounded-lg border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-gray-50 border-gray-200'}`}
+                        className={`p-4 rounded-lg border ${index === 0 ? 'bg-amber-50 border-amber-200' : 'bg-brand-stone-50 dark:bg-slate-800/50 border-brand-stone-200 dark:border-slate-800'}`}
                       >
                         <div className="flex justify-between items-center">
                           <div>
-                            <span className="text-sm text-gray-500">
+                            <span className="text-sm text-brand-stone-500 dark:text-slate-500">
                               {formatDate(a.assessment_date || a.created_at)}
                             </span>
                             {index === 0 && (
@@ -736,7 +749,7 @@ const Profile = ({ client }) => {
                               {a.primary_wound}
                             </span>
                             {a.secondary_wound && (
-                              <span className="text-gray-400"> / {a.secondary_wound}</span>
+                              <span className="text-brand-stone-400 dark:text-slate-500"> / {a.secondary_wound}</span>
                             )}
                           </div>
                         </div>

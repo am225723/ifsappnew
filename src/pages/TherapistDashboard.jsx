@@ -501,7 +501,6 @@ const TherapistDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [clientInsights, setClientInsights] = useState(null);
   const [insightsLoading, setInsightsLoading] = useState(false);
-  const [clientActivities, setClientActivities] = useState({});
   const [clientGamification, setClientGamification] = useState({});
 
   const [activeAction, setActiveAction] = useState(null);
@@ -764,7 +763,6 @@ const TherapistDashboard = () => {
         if (!activitiesByClient[a.client_id]) activitiesByClient[a.client_id] = [];
         activitiesByClient[a.client_id].push(a);
       });
-      setClientActivities(activitiesByClient);
 
       const gamificationByClient = {};
       (gamificationRows || []).forEach(g => {
@@ -1106,7 +1104,7 @@ const TherapistDashboard = () => {
           description: j.content ? (j.content.length > 120 ? j.content.substring(0, 120) + '...' : j.content) : '',
           timestamp: j.created_at,
           meta: j.mood ? `Mood: ${j.mood}` : null,
-          colorKey: 'purple',
+          colorKey: 'amber',
         });
       });
 
@@ -1675,7 +1673,7 @@ const TherapistDashboard = () => {
       });
       setEmailSubject(subject);
       setEmailPreviewHtml(html);
-    } catch (err) {
+    } catch {
       setEmailError('Template not found. Please upload the HTML file to /email-templates/');
       setEmailPreviewHtml('');
       setEmailSubject('');
@@ -1793,13 +1791,11 @@ const TherapistDashboard = () => {
       const clientIds = clients.map(c => c.id);
       const [
         { data: assessments },
-        { data: progressRows },
         { data: journalRows },
         { data: moodRows },
         { data: activityRows }
       ] = await Promise.all([
         supabase.from('ifs_assessment_results').select('*').in('client_id', clientIds),
-        supabase.from('ifs_client_progress').select('*').in('client_id', clientIds),
         supabase.from('ifs_journal_entries').select('id, client_id, created_at, mood, content, title').in('client_id', clientIds),
         supabase.from('ifs_mood_entries').select('client_id, mood, energy, date').in('client_id', clientIds),
         supabase.from('ifs_therapy_activity_progress').select('client_id, activity_id, completed').in('client_id', clientIds)
@@ -2290,12 +2286,6 @@ const TherapistDashboard = () => {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
-  const daysSince = (dateStr) => {
-    if (!dateStr) return 999;
-    const diff = new Date() - new Date(dateStr);
-    return Math.floor(diff / (1000 * 60 * 60 * 24));
-  };
-
   const isDark = theme.isDark;
   const cardBg = isDark ? 'bg-slate-800/90' : 'bg-white/80 backdrop-blur-sm';
   const cardBorder = isDark ? 'border-slate-700/50' : 'border-gray-200/60';
@@ -2306,15 +2296,14 @@ const TherapistDashboard = () => {
   const hoverBg = isDark ? 'hover:bg-slate-700' : 'hover:bg-gray-50';
 
   const glowStyles = {
-    blue: isDark ? 'shadow-[0_0_15px_rgba(59,130,246,0.15)] border-blue-500/30' : 'shadow-[0_0_20px_rgba(59,130,246,0.1)] border-blue-200',
-    emerald: isDark ? 'shadow-[0_0_15px_rgba(16,185,129,0.15)] border-emerald-500/30' : 'shadow-[0_0_20px_rgba(16,185,129,0.1)] border-emerald-200',
-    amber: isDark ? 'shadow-[0_0_15px_rgba(245,158,11,0.15)] border-amber-500/30' : 'shadow-[0_0_20px_rgba(245,158,11,0.1)] border-amber-200',
-    purple: isDark ? 'shadow-[0_0_15px_rgba(139,92,246,0.15)] border-purple-500/30' : 'shadow-[0_0_20px_rgba(139,92,246,0.1)] border-purple-200',
+    blue: isDark ? 'shadow-[0_0_15px_rgba(120,113,108,0.15)] border-brand-stone-500/30' : 'shadow-[0_0_20px_rgba(120,113,108,0.1)] border-brand-stone-200',
+    emerald: isDark ? 'shadow-[0_0_15px_rgba(5,150,105,0.15)] border-brand-emerald-600/30' : 'shadow-[0_0_20px_rgba(5,150,105,0.1)] border-brand-emerald-100',
+    amber: isDark ? 'shadow-[0_0_15px_rgba(217,119,6,0.15)] border-brand-gold-600/30' : 'shadow-[0_0_20px_rgba(217,119,6,0.1)] border-brand-gold-100',
     rose: isDark ? 'shadow-[0_0_15px_rgba(244,63,94,0.15)] border-rose-500/30' : 'shadow-[0_0_20px_rgba(244,63,94,0.1)] border-rose-200',
   };
 
   const getWoundGlow = (wound) => {
-    const map = { abandonment: 'blue', shame: 'purple', neglect: 'amber', betrayal: 'rose', helplessness: 'rose' };
+    const map = { abandonment: 'blue', shame: 'amber', neglect: 'amber', betrayal: 'rose', helplessness: 'rose' };
     return glowStyles[map[wound] || 'amber'];
   };
 
@@ -2373,7 +2362,7 @@ const TherapistDashboard = () => {
 
   const getResponseBadge = (key) => {
     const bare = stripStepPrefix(key);
-    if (bare.startsWith('secondary-wound-reflection-')) return { label: 'Secondary Wound', color: 'bg-purple-100 text-purple-700' };
+    if (bare.startsWith('secondary-wound-reflection-')) return { label: 'Secondary Wound', color: 'bg-amber-100 text-amber-700' };
     if (bare.startsWith('wound-reflection-')) return { label: 'Wound', color: 'bg-amber-100 text-amber-700' };
     if (bare.startsWith('reflection-')) return { label: 'Reflection', color: 'bg-blue-100 text-blue-700' };
     if (bare.startsWith('question-')) return { label: 'Activity', color: 'bg-emerald-100 text-emerald-700' };
@@ -2437,10 +2426,10 @@ const TherapistDashboard = () => {
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Total Clients', value: stats.totalClients, icon: Users, color: 'from-blue-500 to-blue-600', glow: 'blue' },
-          { label: 'Active Clients', value: stats.activeSessions, icon: Activity, color: 'from-emerald-500 to-emerald-600', glow: 'emerald' },
-          { label: 'Assessments Done', value: stats.assessmentsCompleted, icon: Target, color: 'from-amber-500 to-amber-600', glow: 'amber' },
-          { label: 'Avg Progress', value: `${stats.avgProgress}%`, icon: TrendingUp, color: 'from-purple-500 to-purple-600', glow: 'purple' }
+          { label: 'Total Clients', value: stats.totalClients, icon: Users, color: 'from-brand-stone-500 to-brand-stone-600', glow: 'blue' },
+          { label: 'Active Clients', value: stats.activeSessions, icon: Activity, color: 'from-brand-emerald-600 to-brand-emerald-700', glow: 'emerald' },
+          { label: 'Assessments Done', value: stats.assessmentsCompleted, icon: Target, color: 'from-brand-gold-600 to-brand-emerald-700', glow: 'amber' },
+          { label: 'Avg Progress', value: `${stats.avgProgress}%`, icon: TrendingUp, color: 'from-brand-gold-600 to-brand-emerald-700', glow: 'amber' }
         ].map((stat) => {
           const Icon = stat.icon;
           return (
@@ -2566,7 +2555,7 @@ const TherapistDashboard = () => {
                         {client.name.charAt(0)}
                       </div>
                       {client.level > 1 && (
-                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white text-[9px] font-bold border-2 border-white shadow">
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-gradient-to-br from-brand-gold-500 to-brand-gold-700 flex items-center justify-center text-white text-[9px] font-bold border-2 border-white shadow">
                           {client.level}
                         </div>
                       )}
@@ -2645,7 +2634,7 @@ const TherapistDashboard = () => {
                       <span className={`text-[11px] font-semibold ${textPrimary}`}>{client.xp >= 1000 ? `${(client.xp / 1000).toFixed(1)}k` : client.xp}</span>
                     </div>
                     <div className="flex items-center gap-1" title={`Level ${client.level}`}>
-                      <Crown className="w-3.5 h-3.5 text-purple-500" />
+                      <Crown className="w-3.5 h-3.5 text-amber-500" />
                       <span className={`text-[11px] font-semibold ${textPrimary}`}>Lv.{client.level}</span>
                     </div>
                     {client.streak > 0 && (
@@ -2713,7 +2702,7 @@ const TherapistDashboard = () => {
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => { setEditingClient(client); setEditClientForm({ name: client.name, email: client.email, phone: client.phone || '' }); }}
-                        className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] font-medium ${hoverBg} ${textSecondary} transition-all hover:text-purple-500`}
+                        className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] font-medium ${hoverBg} ${textSecondary} transition-all hover:text-amber-500`}
                         title="Edit Client"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
@@ -2750,7 +2739,7 @@ const TherapistDashboard = () => {
                       <button
                         onClick={() => openAccessControls(client)}
                         className={`flex-1 flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-[11px] font-medium ${hoverBg} transition-all ${
-                          client.accessRestrictions ? 'text-red-500 hover:text-red-600' : `${textSecondary} hover:text-indigo-500`
+                          client.accessRestrictions ? 'text-red-500 hover:text-red-600' : `${textSecondary} hover:text-stone-500`
                         }`}
                         title="Access Controls"
                       >
@@ -2961,7 +2950,7 @@ const TherapistDashboard = () => {
                         <span className={`text-xs font-medium ${textPrimary}`}>{client.assessmentsTaken}</span>
                       </div>
                       <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-amber-400 to-amber-600 rounded-full transition-all" style={{ width: `${Math.min((client.assessmentsTaken / 5) * 100, 100)}%` }} />
+                        <div className="h-full bg-gradient-to-r from-brand-gold-500 to-brand-gold-700 rounded-full transition-all" style={{ width: `${Math.min((client.assessmentsTaken / 5) * 100, 100)}%` }} />
                       </div>
                     </div>
                     <div>
@@ -2979,7 +2968,7 @@ const TherapistDashboard = () => {
                         <span className={`text-xs font-medium ${textPrimary}`}>{client.therapyActivities}/{client.totalActivities || 0}</span>
                       </div>
                       <div className="h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <div className="h-full bg-gradient-to-r from-purple-400 to-purple-600 rounded-full transition-all" style={{ width: `${client.totalActivities > 0 ? (client.therapyActivities / client.totalActivities) * 100 : 0}%` }} />
+                        <div className="h-full bg-gradient-to-r from-brand-gold-500 to-brand-gold-700 rounded-full transition-all" style={{ width: `${client.totalActivities > 0 ? (client.therapyActivities / client.totalActivities) * 100 : 0}%` }} />
                       </div>
                     </div>
                     <div>
@@ -2988,7 +2977,7 @@ const TherapistDashboard = () => {
                         <span className={`text-xs font-medium ${textPrimary}`}>{client.xp.toLocaleString()}</span>
                       </div>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <span className={`text-xs ${textMuted} flex items-center gap-0.5`}><Crown className="w-3 h-3 text-purple-500" />Lv.{client.level}</span>
+                        <span className={`text-xs ${textMuted} flex items-center gap-0.5`}><Crown className="w-3 h-3 text-amber-500" />Lv.{client.level}</span>
                         {client.streak > 0 && <span className={`text-xs ${textMuted} flex items-center gap-0.5`}><Flame className="w-3 h-3 text-orange-500" />{client.streak}d</span>}
                       </div>
                     </div>
@@ -3111,7 +3100,7 @@ const TherapistDashboard = () => {
                                     setReminderForm({ clientId: client.id, type: 'checkin', message: `Hi ${client.name}, just checking in to see how you're doing. Your healing journey matters, and I'm here to support you. 💛` });
                                     setReminderSaved(false);
                                   }}
-                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm`}
+                                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-brand-emerald-600 to-brand-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 transition-all shadow-sm`}
                                 >
                                   <MessageSquare className="w-3 h-3" />
                                   Message
@@ -3200,15 +3189,15 @@ const TherapistDashboard = () => {
           {!activeAction && (
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
-                { id: 'create-client', label: 'Create New Client PIN', icon: Plus, color: 'from-blue-500 to-blue-600', desc: 'Generate a secure access PIN for a new client' },
-                { id: 'send-reminder', label: 'Send Reminder', icon: MessageSquare, color: 'from-emerald-500 to-emerald-600', desc: 'Send session or activity reminders to clients' },
-                { id: 'link:/advisor-messages', label: 'Client Messages', icon: MessageCircle, color: 'from-blue-500 to-indigo-600', desc: 'Send and receive secure messages with clients' },
-                { id: 'link:/advisor-homework', label: 'Homework Manager', icon: Target, color: 'from-amber-500 to-amber-600', desc: 'Create, assign, and track client homework' },
+                { id: 'create-client', label: 'Create New Client PIN', icon: Plus, color: 'from-brand-stone-500 to-brand-stone-600', desc: 'Generate a secure access PIN for a new client' },
+                { id: 'send-reminder', label: 'Send Reminder', icon: MessageSquare, color: 'from-brand-emerald-600 to-brand-emerald-700', desc: 'Send session or activity reminders to clients' },
+                { id: 'link:/advisor-messages', label: 'Client Messages', icon: MessageCircle, color: 'from-brand-stone-500 to-brand-stone-600', desc: 'Send and receive secure messages with clients' },
+                { id: 'link:/advisor-homework', label: 'Homework Manager', icon: Target, color: 'from-brand-gold-600 to-brand-emerald-700', desc: 'Create, assign, and track client homework' },
                 { id: 'link:/advisor-reports', label: 'Progress Reports', icon: Download, color: 'from-emerald-500 to-teal-600', desc: 'Generate and export client progress reports' },
-                { id: 'link:/assessment-builder', label: 'Assessment Builder', icon: FileText, color: 'from-purple-500 to-purple-600', desc: 'Create custom assessments for clients' },
-                { id: 'link:/mood-analytics', label: 'Mood & Parts Analytics', icon: TrendingUp, color: 'from-indigo-500 to-purple-600', desc: 'View mood trends, parts patterns, and self-energy over time' },
-                { id: 'export-reports', label: 'Export All Reports', icon: Download, color: 'from-amber-500 to-amber-600', desc: 'Download comprehensive progress reports' },
-                { id: 'group-analytics', label: 'View Group Analytics', icon: BarChart3, color: 'from-amber-500 to-amber-600', desc: 'Analyze trends across all clients' }
+                { id: 'link:/assessment-builder', label: 'Assessment Builder', icon: FileText, color: 'from-brand-gold-600 to-brand-emerald-700', desc: 'Create custom assessments for clients' },
+                { id: 'link:/mood-analytics', label: 'Mood & Parts Analytics', icon: TrendingUp, color: 'from-brand-stone-500 to-brand-gold-600', desc: 'View mood trends, parts patterns, and self-energy over time' },
+                { id: 'export-reports', label: 'Export All Reports', icon: Download, color: 'from-brand-gold-600 to-brand-emerald-700', desc: 'Download comprehensive progress reports' },
+                { id: 'group-analytics', label: 'View Group Analytics', icon: BarChart3, color: 'from-brand-gold-600 to-brand-emerald-700', desc: 'Analyze trends across all clients' }
               ].map((action) => {
                 const Icon = action.icon;
                 return (
@@ -3255,7 +3244,7 @@ const TherapistDashboard = () => {
               {activeAction === 'create-client' && (
                 <div className={`${cardBg} rounded-xl border ${cardBorder} p-6 max-w-lg`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-stone-500 to-brand-stone-600 flex items-center justify-center">
                       <Plus className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -3270,7 +3259,7 @@ const TherapistDashboard = () => {
                         <CheckCircle className="w-10 h-10 text-emerald-500 mx-auto mb-3" />
                         <h3 className="text-lg font-semibold text-emerald-800 mb-1">{newClientResult.role === 'therapist' ? 'Advisor' : 'Client'} Created</h3>
                         <p className="text-sm text-emerald-600 mb-2">{newClientResult.name} is ready to log in</p>
-                        <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3 ${newClientResult.role === 'therapist' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}`}>
+                        <span className={`inline-block text-xs font-semibold px-3 py-1 rounded-full mb-3 ${newClientResult.role === 'therapist' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>
                           Role: {newClientResult.role === 'therapist' ? 'Advisor' : 'Client'}
                         </span>
                         <div className="bg-white rounded-lg p-4 border border-emerald-200 inline-block">
@@ -3336,14 +3325,14 @@ const TherapistDashboard = () => {
                               className={`p-3 rounded-lg border-2 text-left transition-all ${
                                 newClientForm.role === role.value
                                   ? role.value === 'therapist'
-                                    ? 'border-purple-500 bg-purple-50 dark:bg-purple-900/20 dark:border-purple-400'
+                                    ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-400'
                                     : 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400'
                                   : `${cardBorder} hover:border-gray-400`
                               }`}
                             >
                               <div className="flex items-center gap-2 mb-1">
                                 <span className="text-lg">{role.icon}</span>
-                                <span className={`text-sm font-semibold ${newClientForm.role === role.value ? (role.value === 'therapist' ? 'text-purple-700 dark:text-purple-300' : 'text-blue-700 dark:text-blue-300') : textPrimary}`}>
+                                <span className={`text-sm font-semibold ${newClientForm.role === role.value ? (role.value === 'therapist' ? 'text-amber-700 dark:text-amber-300' : 'text-blue-700 dark:text-blue-300') : textPrimary}`}>
                                   {role.label}
                                 </span>
                               </div>
@@ -3380,7 +3369,7 @@ const TherapistDashboard = () => {
                       <button
                         onClick={handleCreateClient}
                         disabled={newClientLoading || !newClientForm.name.trim()}
-                        className="w-full py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="w-full py-2.5 bg-gradient-to-r from-brand-stone-500 to-brand-stone-600 text-white rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         {newClientLoading ? (
                           <><RefreshCw className="w-4 h-4 animate-spin" /> Creating Client...</>
@@ -3396,7 +3385,7 @@ const TherapistDashboard = () => {
               {activeAction === 'send-reminder' && (
                 <div className={`${cardBg} rounded-xl border ${cardBorder} p-6 max-w-lg`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-emerald-600 to-brand-emerald-700 flex items-center justify-center">
                       <MessageSquare className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -3472,7 +3461,7 @@ const TherapistDashboard = () => {
                           handleSendReminder();
                         }}
                         disabled={!reminderForm.clientId || !reminderForm.message.trim()}
-                        className="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        className="flex-1 py-2.5 bg-gradient-to-r from-brand-emerald-600 to-brand-emerald-700 text-white rounded-lg text-sm font-medium hover:from-emerald-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                       >
                         <Copy className="w-4 h-4" />
                         Copy & Save Reminder
@@ -3488,7 +3477,7 @@ const TherapistDashboard = () => {
               {activeAction === 'export-reports' && (
                 <div className={`${cardBg} rounded-xl border ${cardBorder} p-6 max-w-lg`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center">
                       <Download className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -3517,7 +3506,7 @@ const TherapistDashboard = () => {
                     <button
                       onClick={handleExportReports}
                       disabled={exportLoading || clients.length === 0}
-                      className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white rounded-lg text-sm font-medium hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      className="w-full py-2.5 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 text-white rounded-lg text-sm font-medium hover:from-amber-600 hover:to-amber-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                     >
                       {exportLoading ? (
                         <><RefreshCw className="w-4 h-4 animate-spin" /> Generating Report...</>
@@ -3542,7 +3531,7 @@ const TherapistDashboard = () => {
                 return (
                   <div className="space-y-4">
                     <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center">
                         <BarChart3 className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -3553,10 +3542,10 @@ const TherapistDashboard = () => {
 
                     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                       {[
-                        { label: 'Avg Progress', value: `${analytics.avgProgress}%`, sub: `${analytics.avgModules} modules avg`, color: 'from-blue-500 to-blue-600' },
-                        { label: 'Active Rate', value: `${analytics.activeRate}%`, sub: `${analytics.riskCounts.low} of ${clients.length} active`, color: 'from-emerald-500 to-emerald-600' },
-                        { label: 'Total Journals', value: analytics.totalJournals, sub: `${(analytics.totalJournals / clients.length).toFixed(1)} per client`, color: 'from-amber-500 to-amber-600' },
-                        { label: 'Activity Rate', value: `${analytics.activityCompletionRate}%`, sub: `${analytics.completedActivities}/${analytics.totalActivities} done`, color: 'from-amber-500 to-amber-600' }
+                        { label: 'Avg Progress', value: `${analytics.avgProgress}%`, sub: `${analytics.avgModules} modules avg`, color: 'from-brand-stone-500 to-brand-stone-600' },
+                        { label: 'Active Rate', value: `${analytics.activeRate}%`, sub: `${analytics.riskCounts.low} of ${clients.length} active`, color: 'from-brand-emerald-600 to-brand-emerald-700' },
+                        { label: 'Total Journals', value: analytics.totalJournals, sub: `${(analytics.totalJournals / clients.length).toFixed(1)} per client`, color: 'from-brand-gold-600 to-brand-emerald-700' },
+                        { label: 'Activity Rate', value: `${analytics.activityCompletionRate}%`, sub: `${analytics.completedActivities}/${analytics.totalActivities} done`, color: 'from-brand-gold-600 to-brand-emerald-700' }
                       ].map(stat => (
                         <div key={stat.label} className={`${cardBg} rounded-xl border ${cardBorder} p-4`}>
                           <p className={`text-xs ${textMuted} mb-1`}>{stat.label}</p>
@@ -3571,7 +3560,6 @@ const TherapistDashboard = () => {
                         <h3 className={`text-sm font-semibold ${textPrimary} mb-4`}>Wound Distribution</h3>
                         <div className="space-y-3">
                           {Object.entries(analytics.woundCounts).filter(([k]) => k !== 'unknown').map(([wound, count]) => {
-                            const colors = woundColorMap[wound] || { bg: 'bg-gray-100', text: 'text-gray-700' };
                             const pct = maxWound > 0 ? Math.round((count / clients.length) * 100) : 0;
                             return (
                               <div key={wound}>
@@ -3647,7 +3635,7 @@ const TherapistDashboard = () => {
       {activeTab === 'lessons' && (
         <div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center">
               <BookOpen className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -3679,7 +3667,7 @@ const TherapistDashboard = () => {
               {clientCurriculum.length === 0 ? (
                 <div className={`${cardBg} rounded-xl border ${cardBorder} p-6`}>
                   <div className="flex items-start gap-4 mb-5">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center flex-shrink-0">
                       <BookOpen className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -3722,7 +3710,7 @@ const TherapistDashboard = () => {
                   <button
                     onClick={() => handleGenerateCurriculum(selectedLessonClient)}
                     disabled={generatingCurriculum}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/25 disabled:opacity-60"
+                    className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 text-white rounded-xl font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-lg shadow-amber-500/25 disabled:opacity-60"
                   >
                     {generatingCurriculum
                       ? <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Generating...</>
@@ -3758,7 +3746,7 @@ const TherapistDashboard = () => {
                     </div>
                     {genResult?.error && <p className="mt-2 text-xs text-red-600">{genResult.error}</p>}
                     {genResult?.success && <p className="mt-2 text-xs text-emerald-600">✓ {genResult.success}</p>}
-                    <button onClick={() => handleGenerateCurriculum(selectedLessonClient)} disabled={generatingCurriculum} className="mt-3 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all disabled:opacity-60">
+                    <button onClick={() => handleGenerateCurriculum(selectedLessonClient)} disabled={generatingCurriculum} className="mt-3 flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all disabled:opacity-60">
                       {generatingCurriculum ? <><div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" /> Regenerating...</> : <><RefreshCw className="w-3.5 h-3.5" /> Regenerate</>}
                     </button>
                     <p className={`text-xs mt-1.5 ${textMuted}`}>This will replace the existing curriculum with a new personalized version.</p>
@@ -3836,7 +3824,7 @@ const TherapistDashboard = () => {
                         <div className="p-5">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex items-start gap-4 flex-1">
-                              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                                 {mod.module_order || index + 1}
                               </div>
                               <div className="flex-1">
@@ -3947,7 +3935,7 @@ const TherapistDashboard = () => {
                       onClick={() => { setShowAddModule(true); setAddModuleResult(null); }}
                       className={`w-full p-5 flex items-center justify-center gap-3 ${hoverBg} transition-colors`}
                     >
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-emerald-600 to-brand-emerald-700 flex items-center justify-center">
                         <Plus className="w-5 h-5 text-white" />
                       </div>
                       <div className="text-left">
@@ -4045,7 +4033,7 @@ const TherapistDashboard = () => {
                                   className={`px-3 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all flex-shrink-0 ${
                                     alreadyAdded
                                       ? `${isDark ? 'bg-slate-600 text-slate-400' : 'bg-gray-100 text-gray-400'} cursor-not-allowed`
-                                      : 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md'
+                                      : 'bg-gradient-to-r from-brand-emerald-600 to-brand-emerald-700 text-white hover:from-emerald-600 hover:to-emerald-700 shadow-md'
                                   } disabled:opacity-60`}
                                 >
                                   {addingModuleId === template.id ? (
@@ -4076,7 +4064,7 @@ const TherapistDashboard = () => {
                     className={`w-full flex items-center justify-between p-5 text-left ${hoverBg} transition-colors`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {index + 1}
                       </div>
                       <div>
@@ -4173,7 +4161,7 @@ const TherapistDashboard = () => {
       {activeTab === 'insights' && (
         <div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center">
               <Eye className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -4199,7 +4187,7 @@ const TherapistDashboard = () => {
             {selectedInsightClient && !insightsLoading && clientInsights && (
               <button
                 onClick={() => handleGenerateReport(selectedInsightClient)}
-                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-md"
+                className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all shadow-md"
               >
                 <FileText className="w-4 h-4" />
                 Generate Report
@@ -4233,7 +4221,7 @@ const TherapistDashboard = () => {
             };
             const woundScores = assessment ? [
               { type: 'Abandonment', score: normalizeScore(assessment.abandonment_score), color: 'blue' },
-              { type: 'Shame', score: normalizeScore(assessment.shame_score), color: 'purple' },
+              { type: 'Shame', score: normalizeScore(assessment.shame_score), color: 'amber' },
               { type: 'Neglect', score: normalizeScore(assessment.neglect_score), color: 'amber' },
               { type: 'Betrayal', score: normalizeScore(assessment.betrayal_score), color: 'red' },
               { type: 'Helplessness', score: normalizeScore(assessment.helplessness_score || 0), color: 'rose' }
@@ -4246,7 +4234,7 @@ const TherapistDashboard = () => {
                 {!assessment && !personalization && (
                   <div className={`${cardBg} rounded-2xl border ${isDark ? 'border-amber-700/40' : 'border-amber-200'} ${isDark ? 'bg-amber-900/10' : 'bg-amber-50'} p-6`}>
                     <div className="flex items-start gap-4">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center flex-shrink-0">
                         <AlertTriangle className="w-5 h-5 text-white" />
                       </div>
                       <div className="flex-1">
@@ -4260,7 +4248,7 @@ const TherapistDashboard = () => {
                         <div className="flex flex-wrap gap-2">
                           <button
                             onClick={() => { setActiveTab('lessons'); setSelectedLessonClient(selectedInsightClient); loadClientCurriculum(selectedInsightClient); }}
-                            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
+                            className="flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-brand-gold-600 to-brand-emerald-700 text-white rounded-lg text-sm font-semibold hover:from-amber-600 hover:to-orange-600 transition-all"
                           >
                             <BookOpen className="w-4 h-4" /> Go to Lesson Plans → Generate Curriculum
                           </button>
@@ -4270,9 +4258,9 @@ const TherapistDashboard = () => {
                   </div>
                 )}
                 {(assessment || personalization) && (
-                  <div className={`${cardBg} rounded-2xl border ${glowStyles.purple} p-5`}>
+                  <div className={`${cardBg} rounded-2xl border ${glowStyles.amber} p-5`}>
                     <h3 className={`text-lg font-bold ${textPrimary} mb-4 flex items-center gap-2 tracking-tight`}>
-                      <Sparkles className="w-5 h-5 text-purple-500" />
+                      <Sparkles className="w-5 h-5 text-amber-500" />
                       Curriculum Personalization for {client?.name}
                     </h3>
 
@@ -4293,7 +4281,7 @@ const TherapistDashboard = () => {
                                 <div
                                   className={`h-full rounded-full transition-all ${
                                     w.color === 'blue' ? 'bg-blue-500' :
-                                    w.color === 'purple' ? 'bg-purple-500' :
+                                    w.color === 'amber' ? 'bg-amber-500' :
                                     w.color === 'amber' ? 'bg-amber-500' :
                                     w.color === 'rose' ? 'bg-rose-500' : 'bg-red-500'
                                   }`}
@@ -4306,7 +4294,7 @@ const TherapistDashboard = () => {
                             </div>
                           ))}
                         </div>
-                        <div className={`p-3 rounded-lg ${isDark ? 'bg-indigo-900/20 border-indigo-800' : 'bg-stone-50 border-stone-100'} border`}>
+                        <div className={`p-3 rounded-lg ${isDark ? 'bg-stone-900/20 border-stone-800' : 'bg-stone-50 border-stone-100'} border`}>
                           <p className={`text-sm ${textSecondary}`}>
                             <span className="font-medium">Primary wound:</span>{' '}
                             <span className={`font-semibold ${textPrimary}`}>{assessment.primary_wound || woundScores[0]?.type || 'Not assessed'}</span>
@@ -4322,7 +4310,7 @@ const TherapistDashboard = () => {
                     {clientInsights.partsAssessment && (
                       <div className="mb-6">
                         <h4 className={`text-sm font-semibold ${textPrimary} mb-3 flex items-center gap-2`}>
-                          <Shield className="w-4 h-4 text-purple-500" />
+                          <Shield className="w-4 h-4 text-amber-500" />
                           Protective Parts Assessment
                         </h4>
                         {(() => {
@@ -4366,7 +4354,7 @@ const TherapistDashboard = () => {
                           const typeCounts = { manager: 0, firefighter: 0, exile: 0 };
                           identifiedParts.forEach(p => { typeCounts[p.type] = (typeCounts[p.type] || 0) + 1; });
                           const typeLabels = { manager: 'Managers', firefighter: 'Firefighters', exile: 'Exiles' };
-                          const typeColors = { manager: { bg: isDark ? 'bg-blue-900/30' : 'bg-blue-50', text: isDark ? 'text-blue-300' : 'text-blue-700', border: isDark ? 'border-blue-800' : 'border-blue-200', bar: 'bg-blue-500' }, firefighter: { bg: isDark ? 'bg-amber-900/30' : 'bg-amber-50', text: isDark ? 'text-amber-300' : 'text-amber-700', border: isDark ? 'border-amber-800' : 'border-amber-200', bar: 'bg-amber-500' }, exile: { bg: isDark ? 'bg-pink-900/30' : 'bg-pink-50', text: isDark ? 'text-pink-300' : 'text-pink-700', border: isDark ? 'border-pink-800' : 'border-pink-200', bar: 'bg-pink-500' } };
+                          const typeColors = { manager: { bg: isDark ? 'bg-blue-900/30' : 'bg-blue-50', text: isDark ? 'text-blue-300' : 'text-blue-700', border: isDark ? 'border-blue-800' : 'border-blue-200', bar: 'bg-blue-500' }, firefighter: { bg: isDark ? 'bg-amber-900/30' : 'bg-amber-50', text: isDark ? 'text-amber-300' : 'text-amber-700', border: isDark ? 'border-amber-800' : 'border-amber-200', bar: 'bg-amber-500' }, exile: { bg: isDark ? 'bg-emerald-900/30' : 'bg-emerald-50', text: isDark ? 'text-emerald-300' : 'text-emerald-700', border: isDark ? 'border-emerald-800' : 'border-emerald-200', bar: 'bg-emerald-500' } };
 
                           return (
                             <div>
@@ -4437,13 +4425,13 @@ const TherapistDashboard = () => {
                           };
                           const cColors = {
                             calmness: { ring: 'text-cyan-500', bg: isDark ? 'bg-cyan-900/20' : 'bg-cyan-50', border: isDark ? 'border-cyan-800' : 'border-cyan-200' },
-                            curiosity: { ring: 'text-violet-500', bg: isDark ? 'bg-violet-900/20' : 'bg-violet-50', border: isDark ? 'border-violet-800' : 'border-violet-200' },
-                            compassion: { ring: 'text-pink-500', bg: isDark ? 'bg-pink-900/20' : 'bg-pink-50', border: isDark ? 'border-pink-800' : 'border-pink-200' },
+                            curiosity: { ring: 'text-amber-500', bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50', border: isDark ? 'border-amber-800' : 'border-amber-200' },
+                            compassion: { ring: 'text-emerald-500', bg: isDark ? 'bg-emerald-900/20' : 'bg-emerald-50', border: isDark ? 'border-emerald-800' : 'border-emerald-200' },
                             confidence: { ring: 'text-amber-500', bg: isDark ? 'bg-amber-900/20' : 'bg-amber-50', border: isDark ? 'border-amber-800' : 'border-amber-200' },
                             courage: { ring: 'text-red-500', bg: isDark ? 'bg-red-900/20' : 'bg-red-50', border: isDark ? 'border-red-800' : 'border-red-200' },
                             clarity: { ring: 'text-blue-500', bg: isDark ? 'bg-blue-900/20' : 'bg-blue-50', border: isDark ? 'border-blue-800' : 'border-blue-200' },
                             creativity: { ring: 'text-emerald-500', bg: isDark ? 'bg-emerald-900/20' : 'bg-emerald-50', border: isDark ? 'border-emerald-800' : 'border-emerald-200' },
-                            connectedness: { ring: 'text-indigo-500', bg: isDark ? 'bg-indigo-900/20' : 'bg-indigo-50', border: isDark ? 'border-indigo-800' : 'border-indigo-200' }
+                            connectedness: { ring: 'text-stone-500', bg: isDark ? 'bg-stone-900/20' : 'bg-stone-50', border: isDark ? 'border-stone-800' : 'border-stone-200' }
                           };
                           const cQualities = Object.entries(scores).map(([key, val]) => {
                             const avg = typeof val === 'number' ? val : (val?.average || val?.score || 0);
@@ -4497,7 +4485,7 @@ const TherapistDashboard = () => {
                     {clientInsights.attachmentAssessment && (
                       <div className="mb-6">
                         <h4 className={`text-sm font-semibold ${textPrimary} mb-3 flex items-center gap-2`}>
-                          <Users className="w-4 h-4 text-indigo-500" />
+                          <Users className="w-4 h-4 text-stone-500" />
                           Attachment Style Assessment
                         </h4>
                         {(() => {
@@ -4534,7 +4522,7 @@ const TherapistDashboard = () => {
                                           <span className={`text-sm font-bold ${textPrimary}`}>{sVal}</span>
                                         </div>
                                         <div className="h-2 bg-gray-200 dark:bg-slate-600 rounded-full overflow-hidden">
-                                          <div className={`h-full rounded-full ${key.toLowerCase() === style.toLowerCase() ? 'bg-indigo-500' : 'bg-gray-400'}`} style={{ width: `${pct}%` }} />
+                                          <div className={`h-full rounded-full ${key.toLowerCase() === style.toLowerCase() ? 'bg-stone-500' : 'bg-gray-400'}`} style={{ width: `${pct}%` }} />
                                         </div>
                                       </div>
                                     );
@@ -4606,7 +4594,7 @@ const TherapistDashboard = () => {
                             {personalization.personalizedModules.map((mod, idx) => (
                               <div key={mod.id || idx} className={`p-4 rounded-lg border ${cardBorder} ${isDark ? 'bg-slate-700/30' : 'bg-gray-50'}`}>
                                 <div className="flex items-start gap-3">
-                                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                                     {idx + 1}
                                   </div>
                                   <div className="flex-1 min-w-0">
@@ -4615,7 +4603,7 @@ const TherapistDashboard = () => {
                                       <div className="flex items-center gap-2 mt-1">
                                         <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                                           mod.personalizedContent.woundFocus.toLowerCase().includes('abandon') ? 'bg-blue-100 text-blue-700' :
-                                          mod.personalizedContent.woundFocus.toLowerCase().includes('shame') ? 'bg-purple-100 text-purple-700' :
+                                          mod.personalizedContent.woundFocus.toLowerCase().includes('shame') ? 'bg-amber-100 text-amber-700' :
                                           mod.personalizedContent.woundFocus.toLowerCase().includes('neglect') ? 'bg-amber-100 text-amber-700' :
                                           mod.personalizedContent.woundFocus.toLowerCase().includes('helpless') ? 'bg-rose-100 text-rose-700' :
                                           'bg-red-100 text-red-700'
@@ -4625,9 +4613,9 @@ const TherapistDashboard = () => {
                                       </div>
                                     )}
                                     {mod.personalizedContent?.specificChanges && (
-                                      <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-purple-900/20 border-purple-800/30' : 'bg-purple-50 border-purple-100'} border`}>
-                                        <p className={`text-xs font-semibold ${isDark ? 'text-purple-300' : 'text-purple-700'} mb-1`}>What Changed:</p>
-                                        <p className={`text-xs ${isDark ? 'text-purple-200' : 'text-purple-600'} leading-relaxed`}>{mod.personalizedContent.specificChanges}</p>
+                                      <div className={`mt-2 p-2 rounded-lg ${isDark ? 'bg-amber-900/20 border-amber-800/30' : 'bg-amber-50 border-amber-100'} border`}>
+                                        <p className={`text-xs font-semibold ${isDark ? 'text-amber-300' : 'text-amber-700'} mb-1`}>What Changed:</p>
+                                        <p className={`text-xs ${isDark ? 'text-amber-200' : 'text-amber-600'} leading-relaxed`}>{mod.personalizedContent.specificChanges}</p>
                                       </div>
                                     )}
                                     {mod.personalizedContent?.healingGoals && mod.personalizedContent.healingGoals.length > 0 && (
@@ -4665,12 +4653,12 @@ const TherapistDashboard = () => {
                             ))}
                           </div>
                         ) : personalization.primaryWound ? (
-                          <div className={`p-4 rounded-xl border ${isDark ? 'border-purple-800/40 bg-purple-900/15' : 'border-purple-200 bg-purple-50/50'}`}>
+                          <div className={`p-4 rounded-xl border ${isDark ? 'border-amber-800/40 bg-amber-900/15' : 'border-amber-200 bg-amber-50/50'}`}>
                             <div className="flex items-start gap-3">
-                              <Gem className={`w-5 h-5 text-purple-500 flex-shrink-0 mt-0.5`} />
+                              <Gem className={`w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5`} />
                               <div className="flex-1">
                                 <p className={`text-sm font-semibold ${textPrimary}`}>
-                                  Curriculum adapted for <span className="text-purple-600 dark:text-purple-400 capitalize">{personalization.primaryWound}</span> wound pattern
+                                  Curriculum adapted for <span className="text-amber-600 dark:text-amber-400 capitalize">{personalization.primaryWound}</span> wound pattern
                                 </p>
                                 {personalization.woundRanking && (
                                   <div className="mt-2 flex flex-wrap gap-1.5">
@@ -4753,7 +4741,7 @@ const TherapistDashboard = () => {
                           <div className="space-y-4">
                             {changes.map((item, i) => (
                               <div key={i} className="flex items-start gap-3">
-                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">
+                                <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0 mt-0.5">
                                   {i + 1}
                                 </div>
                                 <div className="flex-1">
@@ -4793,7 +4781,7 @@ const TherapistDashboard = () => {
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
                       {[
                         { label: 'Total XP', value: (clientGam.xp || 0).toLocaleString(), icon: Zap, color: 'text-amber-500' },
-                        { label: 'Level', value: clientGam.level || 1, icon: Crown, color: 'text-purple-500' },
+                        { label: 'Level', value: clientGam.level || 1, icon: Crown, color: 'text-amber-500' },
                         { label: 'Current Streak', value: `${clientGam.streak_current || 0}d`, icon: Flame, color: 'text-orange-500' },
                         { label: 'Best Streak', value: `${clientGam.streak_longest || 0}d`, icon: Star, color: 'text-yellow-500' }
                       ].map(stat => {
@@ -4898,9 +4886,9 @@ const TherapistDashboard = () => {
                 )}
 
                 {clientInsights.journalEntries && clientInsights.journalEntries.length > 0 && (
-                  <div className={`${cardBg} rounded-2xl border ${glowStyles.purple} p-5`}>
+                  <div className={`${cardBg} rounded-2xl border ${glowStyles.amber} p-5`}>
                     <h3 className={`text-lg font-bold ${textPrimary} mb-4 flex items-center gap-2 tracking-tight`}>
-                      <FileText className="w-5 h-5 text-purple-500" />
+                      <FileText className="w-5 h-5 text-amber-500" />
                       Journal Entries
                       <span className={`text-xs font-normal ${textMuted} ml-1`}>({clientInsights.journalEntries.length})</span>
                     </h3>
@@ -4918,7 +4906,7 @@ const TherapistDashboard = () => {
                                   <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
                                     entry.parts_dialogue?.partType === 'manager' ? 'bg-blue-100 text-blue-700' :
                                     entry.parts_dialogue?.partType === 'firefighter' ? 'bg-red-100 text-red-700' :
-                                    entry.parts_dialogue?.partType === 'exile' ? 'bg-purple-100 text-purple-700' :
+                                    entry.parts_dialogue?.partType === 'exile' ? 'bg-amber-100 text-amber-700' :
                                     'bg-emerald-100 text-emerald-700'
                                   }`}>{entry.parts_identified[0]}</span>
                                 )}
@@ -4943,7 +4931,7 @@ const TherapistDashboard = () => {
                             {needsTruncate && (
                               <button
                                 onClick={() => setExpandedJournals(prev => ({ ...prev, [entry.id]: !prev[entry.id] }))}
-                                className={`text-xs font-medium mt-2 ${isDark ? 'text-purple-400 hover:text-purple-300' : 'text-purple-600 hover:text-purple-700'}`}
+                                className={`text-xs font-medium mt-2 ${isDark ? 'text-amber-400 hover:text-amber-300' : 'text-amber-600 hover:text-amber-700'}`}
                               >
                                 {isExpanded ? 'Show less' : 'Read more'}
                               </button>
@@ -5148,7 +5136,7 @@ const TherapistDashboard = () => {
                                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${
                                   rec.priority === 'high' ? 'bg-gradient-to-br from-red-500 to-rose-600' :
                                   rec.priority === 'low' ? 'bg-gradient-to-br from-green-500 to-emerald-600' :
-                                  'bg-gradient-to-br from-amber-500 to-orange-500'
+                                  'bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700'
                                 }`}>
                                   <RIcon className="w-4 h-4 text-white" />
                                 </div>
@@ -5184,7 +5172,7 @@ const TherapistDashboard = () => {
                   <ul className="space-y-2.5">
                     {clientInsights.sessionPrep.map((point, i) => (
                       <li key={i} className={`flex items-start gap-3 text-sm ${textSecondary}`}>
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 flex items-center justify-center text-white text-xs font-medium flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-brand-gold-600 to-brand-emerald-700 flex items-center justify-center text-white text-xs font-medium flex-shrink-0 mt-0.5">
                           {i + 1}
                         </div>
                         <span className="leading-relaxed">{point}</span>
@@ -5252,8 +5240,7 @@ const TherapistDashboard = () => {
                   };
 
                   const timelineColorMap = {
-                    blue: { icon: 'text-blue-500', bg: isDark ? 'bg-blue-900/30' : 'bg-blue-50' },
-                    purple: { icon: 'text-purple-500', bg: isDark ? 'bg-purple-900/30' : 'bg-purple-50' },
+                    blue: { icon: 'text-brand-stone-500', bg: isDark ? 'bg-slate-800/60' : 'bg-brand-stone-100' },
                     amber: { icon: 'text-amber-500', bg: isDark ? 'bg-amber-900/30' : 'bg-amber-50' },
                     emerald: { icon: 'text-emerald-500', bg: isDark ? 'bg-emerald-900/30' : 'bg-emerald-50' },
                     orange: { icon: 'text-orange-500', bg: isDark ? 'bg-orange-900/30' : 'bg-orange-50' },
@@ -5265,7 +5252,7 @@ const TherapistDashboard = () => {
                     <div className={`${cardBg} rounded-2xl border ${glowStyles.blue} p-5`}>
                       <div className="flex items-center justify-between mb-4">
                         <h3 className={`text-lg font-bold ${textPrimary} flex items-center gap-2 tracking-tight`}>
-                          <List className="w-5 h-5 text-blue-500" />
+                          <List className="w-5 h-5 text-brand-stone-500" />
                           Activity Timeline
                           <span className={`text-xs font-normal ${textMuted} ml-1`}>({filtered.length})</span>
                         </h3>
@@ -5427,7 +5414,7 @@ const TherapistDashboard = () => {
       {activeTab === 'roadmap' && (
         <div>
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-stone-600 flex items-center justify-center">
               <Gem className="w-5 h-5 text-white" />
             </div>
             <div>
@@ -5438,22 +5425,22 @@ const TherapistDashboard = () => {
           <div className="space-y-4">
             {[
               { title: 'Parts Relationship Mapping', desc: 'Interactive visual SVG map showing how a client\'s protectors, managers, firefighters, and exiles relate to each other — including alliances, conflicts, and polarizations between parts. Navigate to Parts Studio to use.', icon: Users, color: 'from-blue-500 to-cyan-600', status: 'Live' },
-              { title: 'Guided Unburdening Protocol', desc: '8-step digital unburdening ceremony with guided prompts, visualization, and burden release tracking. Includes post-unburdening integration exercises. Available under Therapy Integration.', icon: Heart, color: 'from-rose-500 to-pink-600', status: 'Live' },
+              { title: 'Guided Unburdening Protocol', desc: '8-step digital unburdening ceremony with guided prompts, visualization, and burden release tracking. Includes post-unburdening integration exercises. Available under Therapy Integration.', icon: Heart, color: 'from-rose-500 to-emerald-600', status: 'Live' },
               { title: 'Assessment Builder', desc: 'Create custom assessments tailored to your practice — define questions, scoring, and wound mappings. Generate shareable client links. Available under Quick Actions.', icon: Target, color: 'from-sky-500 to-blue-600', status: 'Live' },
               { title: 'Parts Dialogue Voice Mode', desc: 'Voice-guided parts dialogue where clients speak to their parts using speech recognition, with AI facilitating the conversation and text-to-speech responses. Available under Parts Dialogue.', icon: MessageCircle, color: 'from-teal-500 to-emerald-600', status: 'Live' },
-              { title: 'AI-Powered Session Summaries', desc: 'Automatically generate structured session summaries from advisor notes using AI, with key themes, parts identified, progress markers, and suggested homework — saving advisors 15+ minutes per session.', icon: Sparkles, color: 'from-purple-500 to-indigo-600', status: 'In Development' },
+              { title: 'AI-Powered Session Summaries', desc: 'Automatically generate structured session summaries from advisor notes using AI, with key themes, parts identified, progress markers, and suggested homework — saving advisors 15+ minutes per session.', icon: Sparkles, color: 'from-amber-500 to-stone-600', status: 'In Development' },
               { title: 'Mood & Parts Pattern Analytics', desc: 'Advanced analytics dashboard showing correlations between mood entries, active parts, triggers, and healing progress over time — with trend detection and early warning alerts.', icon: TrendingUp, color: 'from-emerald-500 to-teal-600', status: 'Live', link: '/mood-analytics' },
               { title: 'Client Self-Check-In Between Sessions', desc: 'Daily micro check-ins where clients rate their parts activity, Self-energy level, and emotional state — with automatic alerts to advisor if concerning patterns emerge.', icon: Activity, color: 'from-amber-500 to-yellow-600', status: 'Live', link: '/daily-checkin' },
               { title: 'Secure Video Session Integration', desc: 'Built-in HIPAA-compliant video sessions with real-time parts tracking sidebar, live session notes, and automatic recording transcription for review.', icon: Play, color: 'from-red-500 to-orange-600', status: 'Researching' },
-              { title: 'Group Therapy Module', desc: 'Support for IFS-informed group therapy with shared exercises, group parts mapping, anonymous reflection sharing, and facilitator controls for managing group dynamics.', icon: Users, color: 'from-violet-500 to-purple-600', status: 'Researching' },
-              { title: 'Multi-Advisor Practice Management', desc: 'Support for therapy practices with multiple advisors — shared client handoffs, supervisor oversight, cross-advisor analytics, billing integration, and team coordination tools.', icon: Crown, color: 'from-amber-600 to-orange-600', status: 'Planned' }
+              { title: 'Group Therapy Module', desc: 'Support for IFS-informed group therapy with shared exercises, group parts mapping, anonymous reflection sharing, and facilitator controls for managing group dynamics.', icon: Users, color: 'from-brand-gold-600 to-brand-emerald-700', status: 'Researching' },
+              { title: 'Multi-Advisor Practice Management', desc: 'Support for therapy practices with multiple advisors — shared client handoffs, supervisor oversight, cross-advisor analytics, billing integration, and team coordination tools.', icon: Crown, color: 'brightness-105', status: 'Planned' }
             ].map((feature, idx) => {
               const FIcon = feature.icon;
               const statusColors = {
                 'Live': isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-200',
                 'In Development': isDark ? 'bg-emerald-900/40 text-emerald-300 border-emerald-700' : 'bg-emerald-100 text-emerald-700 border-emerald-200',
                 'Planned': isDark ? 'bg-blue-900/40 text-blue-300 border-blue-700' : 'bg-blue-100 text-blue-700 border-blue-200',
-                'Researching': isDark ? 'bg-purple-900/40 text-purple-300 border-purple-700' : 'bg-purple-100 text-purple-700 border-purple-200'
+                'Researching': isDark ? 'bg-amber-900/40 text-amber-300 border-amber-700' : 'bg-amber-100 text-amber-700 border-amber-200'
               };
               return (
                 <div key={idx} className={`${cardBg} rounded-xl border ${cardBorder} p-5 transition-all hover:border-amber-300/50`}>
@@ -5608,7 +5595,7 @@ const TherapistDashboard = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h2 className={`text-xl font-bold ${textPrimary} flex items-center gap-2`}>
-                    <Shield className="w-5 h-5 text-indigo-500" />
+                    <Shield className="w-5 h-5 text-stone-500" />
                     Access Controls
                   </h2>
                   <p className={`text-sm ${textMuted} mt-1`}>{accessControlClient.name}</p>
@@ -5648,7 +5635,7 @@ const TherapistDashboard = () => {
                           type="checkbox"
                           checked={accessControlForm.modules.includes(m.id)}
                           onChange={() => toggleAccessModule(m.id)}
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-stone-600 focus:ring-stone-500"
                         />
                         <span className={`text-sm ${textSecondary}`}>
                           <span className={`font-medium ${textPrimary}`}>Module {m.order}:</span> {m.title}
@@ -5669,7 +5656,7 @@ const TherapistDashboard = () => {
                           type="checkbox"
                           checked={accessControlForm.assessments.includes(key)}
                           onChange={() => toggleAccessAssessment(key)}
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-stone-600 focus:ring-stone-500"
                         />
                         <span className={`text-sm ${textSecondary}`}>{label}</span>
                       </label>
@@ -5688,7 +5675,7 @@ const TherapistDashboard = () => {
                           type="checkbox"
                           checked={accessControlForm.features[key]}
                           onChange={() => toggleAccessFeature(key)}
-                          className="w-4 h-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                          className="w-4 h-4 rounded border-gray-300 text-stone-600 focus:ring-stone-500"
                         />
                         <span className={`text-xs ${textSecondary}`}>{label}</span>
                       </label>
@@ -5708,7 +5695,7 @@ const TherapistDashboard = () => {
                 <button
                   onClick={handleAccessControlSave}
                   disabled={accessControlSaving}
-                  className="flex-1 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-semibold hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
+                  className="flex-1 px-6 py-3 bg-gradient-to-r from-stone-600 to-amber-600 text-white rounded-lg font-semibold hover:from-stone-700 hover:to-amber-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
                 >
                   {accessControlSaving ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Save className="w-4 h-4 mr-2" /> Save Access Controls</>}
                 </button>
@@ -5748,7 +5735,7 @@ const TherapistDashboard = () => {
                       setEditingClient(emailClient);
                       setEditClientForm({ name: emailClient.name, email: emailClient.email || '', phone: emailClient.phone || '' });
                     }}
-                    className="mt-3 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg text-sm font-medium hover:from-purple-700 hover:to-indigo-700"
+                    className="mt-3 px-4 py-2 bg-gradient-to-r from-amber-600 to-stone-600 text-white rounded-lg text-sm font-medium hover:from-amber-700 hover:to-stone-700"
                   >
                     <Edit2 className="w-3.5 h-3.5 inline mr-1.5" />
                     Edit Client
@@ -5827,7 +5814,7 @@ const TherapistDashboard = () => {
                     <button
                       onClick={handleSendEmail}
                       disabled={emailSending || !emailPreviewHtml || !emailSubject || emailLoading}
-                      className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
+                      className="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-stone-600 text-white rounded-lg font-semibold hover:from-blue-700 hover:to-stone-700 transition-all duration-300 disabled:opacity-50 flex items-center justify-center"
                     >
                       {emailSending ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Mail className="w-4 h-4 mr-2" /> Send Email</>}
                     </button>
