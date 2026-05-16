@@ -52,6 +52,7 @@ import HealingTracker from './pages/HealingTracker';
 import OnboardingFlow from './components/OnboardingFlow';
 import { initializePushNotifications } from './lib/pushNotifications';
 import ResourceLibrary from './pages/ResourceLibrary';
+import InnerLibraryMockup from './pages/InnerLibraryMockup';
 import AuthDebug from './components/AuthDebug';
 import { DataProvider } from './contexts/DataContext';
 import { ThemeProvider } from './contexts/ThemeContext';
@@ -486,6 +487,7 @@ function AppContent({ authChecked, clerkLoaded, clerkSignedIn, isAuthenticated, 
                 <Route path="/assessments" element={<Assessments />} />
                 <Route path="/resources" element={<Resources />} />
                 <Route path="/resource-library" element={<FeatureGate feature="resourceLibrary"><ResourceLibrary /></FeatureGate>} />
+                <Route path="/inner-library-mockup" element={<InnerLibraryMockup />} />
                 <Route path="/journal" element={<FeatureGate feature="journal"><Journal /></FeatureGate>} />
                 <Route path="/profile" element={<Profile client={currentClient} />} />
                 <Route path="/settings" element={<Settings />} />
